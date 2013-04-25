@@ -18,11 +18,5 @@ my @BASEDIR = ( splitdir ( rel2abs( dirname( __FILE__ ) ) ) );
 my $LOCKFILE = join '/' , @BASEDIR , 'etc' , 'mongopile.lock';
 my $PIDFILE  = join '/' , @BASEDIR , 'etc' , 'mongopile.pid' ;
 
-#
-# main Startup hook for mojo
-#
-sub startup {
-
-}
 
 1;
