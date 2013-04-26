@@ -15,7 +15,6 @@ BEGIN {
 
 use mongopile 1.0;
 
-$ENV { MOJO_APP  } = 'mongopile';
-$ENV { MOJO_MODE } = 'development';
+$ENV { MOJO_APP } = 'mongopile';
 
 Mojolicious::Commands->start();

@@ -1,0 +1,47 @@
+% layout 'default';
+% title 'mongopile | test ';
+
+%= javascript begin
+(function($){
+
+    ReplicaSet = Backbone.Model.extend({
+    	name : null
+    });   
+   
+    ReplicaSets = Backbone.Collection.extend({
+    	initialize : function ( models, options){
+    		this.bind( "add", options.view.addReplicaSetLi );
+    	}
+    });
+   
+   ReplicaSetView = Backbone.View.extend({
+   		el:$("#testcontainer"),
+   		initialize: function (){
+   			this.replicasets = new ReplicaSets( null, { view:this} );
+
+   		},
+   		events: {
+   			"click#add-replicaset": "showPrompt",
+   		},
+   		showPrompt: function(){
+   			var replicaset_name = prompt("name your replicaset");
+   			var replicaset_model = new ReplicaSet({name : replicaset_name });
+   			this.replicasets.add( replicaset_model );
+   		},
+   		addReplicaSetLi: function(model){
+   			$("#replicasets-list").append( "<li>" + model.get('name') + "</li>" );
+
+   		}
+   		
+
+   });
+
+	var rsView = new ReplicaSetView();
+    
+})(jQuery);
+%= end
+
+<button id="add-replicaset"> Add Replicaset </button>
+<ul id="replicasets-list" ></ul>
+
+<div id="testcontainer"></div>

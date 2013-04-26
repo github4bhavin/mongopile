@@ -7,7 +7,7 @@ $VERSION = 1.0;
 # Purpose : Main class which hooks up into mojo framework            #
 #--------------------------------------------------------------------#
 
-use Mojo::Base 'Mojolicious'
+use Mojo::Base 'Mojolicious';
 use File::Basename          qw { dirname          };
 use File::Spec::Functions   qw { splitdir rel2abs };
 
@@ -22,6 +22,10 @@ my $PIDFILE  = join '/' , @BASEDIR , 'etc' , 'mongopile.pid' ;
 # main Startup hook for mojo
 #
 sub startup {
+  my $self = shift;
+  my $ROUTES = $self->routes;
+ 
+  my $ADMIN_ROUTES = $ROUTES->any('/admin')->to( controller => 'admin' , action => 'test');  
 
 }
 
