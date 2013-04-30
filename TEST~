@@ -1,8 +1,0 @@
-#!/usr/bin/perl
-
-use Test::More;
-use Test::Harness;
-
-my @_BASIC_TEST_CASES = glob "t/basic/*.t";
-
-runtests ( @_BASIC_TEST_CASES );

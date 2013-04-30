@@ -4,5 +4,6 @@ use Test::More;
 use Test::Harness;
 
 my @_BASIC_TESTS = glob "t/basic/*.t";
+my @_DB_TESTS    = glob "t/db/*.t";
 
-runtests ( @_BASIC_TESTS );
+runtests ( @_BASIC_TESTS , @_DB_TESTS );

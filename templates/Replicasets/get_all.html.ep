@@ -1,0 +1,8 @@
+% layout 'default';
+% title 'mongopile | test ';
+
+%= javascript begin
+
+%= end
+
+<div id="log"></div>

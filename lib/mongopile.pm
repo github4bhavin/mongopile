@@ -17,6 +17,13 @@ my @BASEDIR = ( splitdir ( rel2abs( dirname( __FILE__ ) ) ) );
 
 my $LOCKFILE = join '/' , @BASEDIR , 'etc' , 'mongopile.lock';
 my $PIDFILE  = join '/' , @BASEDIR , 'etc' , 'mongopile.pid' ;
+my $DBFILE   = 'mongopile.sqlite';
+
+has schema => sub {
+	my $dbname = 'mongopile';
+	return DBI->connect( "dbi:SQLite:dbnmae=$DBFILE","","",
+	                    { RaiseError => 1, PrintError => 1} );
+};
 
 #
 # main Startup hook for mojo
@@ -24,8 +31,22 @@ my $PIDFILE  = join '/' , @BASEDIR , 'etc' , 'mongopile.pid' ;
 sub startup {
   my $self = shift;
   my $ROUTES = $self->routes;
- 
-  my $ADMIN_ROUTES = $ROUTES->any('/admin')->to( controller => 'admin' , action => 'test');  
+
+	#___ Public routes
+
+  $self->app->secret ( 'M0ng0P1le' );
+  $self->app->config ( hypnotoad => {
+  							listen    => [ 'https://*:444'],
+  							lock_file => $LOCKFILE,
+  							pid_file  => $PIDFILE
+                     });
+
+  #___Register helpers
+  $self->helper( db => sub { $self->app->schema } );
+
+  my $REPLICASET_ROUTES = $ROUTES->any('replicasets')->to( controller=> 'Replicasets' , action => 'access');
+     $REPLICASET_ROUTES->get('getall')->to(controller => 'Replicasets' , action => 'get_all' ); 
+     $REPLICASET_ROUTES->post('/add')->to(controller => 'Replicasets' , action => 'add' );        
 
 }
 
