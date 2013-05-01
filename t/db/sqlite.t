@@ -21,6 +21,11 @@ subtest 'SQLite Tests' => sub {
 		 ok( $dbh->do("CREATE TABLE mpTEST(". join (',', @mpTEST) .")") , 'create table'); 
 		 ok( $dbh->do("INSERT INTO mpTEST VALUES(1,'replicaset_t1')"),"insert table");
 		 ok( !($dbh->do("INSERT INTO mpTEST VALUES(1,'replicaset_t1,5')")),"fail insert table [should fail]");
+		 
+		 my $sth = $dbh->selectall_arrayref("describe mpTEST");
+		    use Data::Dumper;
+		    diag Dumper $sth;
+		    
 		 ok( $dbh->do("DROP TABLE mpTEST"),"Clean up");		
 		 
 		 ok ( unlink ($testDB) , 'removed DB'); 

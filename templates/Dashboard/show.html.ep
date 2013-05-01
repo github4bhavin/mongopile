@@ -1,0 +1,107 @@
+% layout 'default';
+% title 'mongoPile | Dashboard ';
+
+%= javascript begin
+
+$(document).ready(function(){
+   getAllRS();
+	
+   $("#RSPannel").on('click',".rs-block",function(){
+		
+   });
+
+  
+  $("#RSPannel").on('click',"#addNewRS",function(event){
+  	   event.preventDefault();
+  		var newRSPannel = [
+  		    '<div >',
+  		       '<label>serverName:port {default:28017}</lable>',
+  		       '<input id="newRSName" tabindex="1"></input>',
+  		       '<input type="button" id="newRSButton" name="+" value="+" tabindex="2"></input>',
+  		    '</div>'
+  		   ];
+  		var oldPannelView = $("#addNewRS").parent().html();
+  		
+  		$("#addNewRS").parent().html( newRSPannel.join("") );
+        
+       $("#newRSName").focus();
+        
+       //__submit on enterkey
+       $("#RSPannel").on('keypress',"#newRSName",function(event){
+       		if( event.which == 13 ){
+       			event.preventDefault();
+       			$("#newRSButton").click();
+       		}
+       });  		
+  		
+  		$("#RSPannel").on('click',"#newRSButton",function(){
+			$("#log").append("added to RS to set"); 
+
+			//__post data
+			var postData = { newRSName: $("#newRSName").val() };
+			$.post('/replicasets/add', postData , function(data){
+				 $("#log").append("data posted successfuly" + data );
+			});
+			
+			//__render again			
+			getAllRS(); 		
+  		});
+  }); 
+ 
+});
+
+function getAllRS(){
+
+  $.getJSON('/replicasets/getall', function(data){
+     
+     //clean up
+     $("#RSPannel").html("");
+     
+     var rsPannel = [];
+     data['replicasets'].push ('addNewRS');
+     $.each(data['replicasets'],function(key, rsName){
+     	if( rsName != 'addNewRS' ){
+     	 var rsBlock = [ '<div class="span4">',
+     	                    '<div class="rs-block">',
+     	                       '<div class="rs-block-header">',
+       	                            rsName,
+     	                       '</div>',
+     	                    '</div>',
+     	                 '</div>',     	                 
+     	               ];
+         } else {
+     	 var rsBlock = [ '<div class="span4">',
+     	                    '<div class="rs-block">',
+     	                       '<div class="rs-block-header">',
+       	                            '<div id="addNewRS">+</div>',
+     	                       '</div>',
+     	                    '</div>',
+     	                 '</div>',     	                 
+     	               ];
+         }
+         rsPannel.push(  rsBlock.join("") );
+         
+         if( key % 3 == 2 ){
+            $("#RSPannel").append( '<div class="row-fluid">' + rsPannel.join("") + '</div>' );
+            rsPannel = [];
+         }
+
+     });
+     
+     $("#RSPannel").append( '<div class="row-fluid">' + rsPannel.join("") + '</div>' );
+     
+  });
+  
+}
+
+
+%= end
+
+<div class="container">
+
+   <div class="row-fluid">
+      <div class="span12" id="RSPannel">
+      </div>
+   </div>      
+
+</div>
