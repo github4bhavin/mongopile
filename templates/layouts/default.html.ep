@@ -22,7 +22,12 @@
 
 <%= content %>
 
-<div id="log"></div>
+<div id="log">
+% if ( my $error = stash 'error' ) {
+   <%= my $error %>
+% }
+</div>
+
 </body>
 
 </html>

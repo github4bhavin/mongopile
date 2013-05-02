@@ -12,7 +12,8 @@ $(document).ready(function(){
 
   
   $("#RSPannel").on('click',"#addNewRS",function(event){
-  	   event.preventDefault();
+
+  	   
   		var newRSPannel = [
   		    '<div >',
   		       '<label>serverName:port {default:28017}</lable>',
@@ -20,6 +21,7 @@ $(document).ready(function(){
   		       '<input type="button" id="newRSButton" name="+" value="+" tabindex="2"></input>',
   		    '</div>'
   		   ];
+  		
   		var oldPannelView = $("#addNewRS").parent().html();
   		
   		$("#addNewRS").parent().html( newRSPannel.join("") );
@@ -29,22 +31,33 @@ $(document).ready(function(){
        //__submit on enterkey
        $("#RSPannel").on('keypress',"#newRSName",function(event){
        		if( event.which == 13 ){
-       			event.preventDefault();
        			$("#newRSButton").click();
+       			$(this).unbind(event);
        		}
        });  		
   		
-  		$("#RSPannel").on('click',"#newRSButton",function(){
-			$("#log").append("added to RS to set"); 
+  		$("#RSPannel").on('click',"#newRSButton",function(event){
 
 			//__post data
-			var postData = { newRSName: $("#newRSName").val() };
-			$.post('/replicasets/add', postData , function(data){
-				 $("#log").append("data posted successfuly" + data );
-			});
-			
-			//__render again			
-			getAllRS(); 		
+			if( $("#newRSName").val() ) {
+			   var postData = { newRSName: $("#newRSName").val() };
+			   $.post('/replicasets/add', postData , function(data){
+			   	    if(data.error){
+			   	        log(data.error,true,'error');
+			   	     }else{
+                        log(data.success,true,'success');
+                      }  
+			   });
+			   //__render again			
+			   
+			}
+
+            $("#newRSName").parent().remove();
+            $("").unbind(event);
+            $(this).remove();
+			   
+			getAllRS();
+         		
   		});
   }); 
  
@@ -94,6 +107,20 @@ function getAllRS(){
   
 }
 
+//info|error|warning|
+function log(message,clearflag,type){
+	var typeClass = { 'info'    : 'text-info',
+	                  'error'   : 'text-error',
+	                  'success' : 'text-success',
+	                  'warn'    : 'text-warning',
+	                };
+	
+	if(clearflag){
+        $("#log").html( '<span class="'+ typeClass[type] +'">' + message + '</span>' );
+    }else {
+        $("#log").html( '<span class="'+ typeClass[type] +'">' + message + '</span>' );    	
+    }	
+}
 
 %= end
 

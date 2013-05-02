@@ -20,11 +20,11 @@ my @BASEDIR = ( splitdir ( rel2abs( dirname( __FILE__ ) ) ) );
 
 my $LOCKFILE = join '/' , @BASEDIR , 'etc' , 'mongopile.lock';
 my $PIDFILE  = join '/' , @BASEDIR , 'etc' , 'mongopile.pid' ;
-my $DBFILE   = 'mongopile.sqlite';
+my $DBFILE   = join '/', @BASEDIR , 'data', 'mongopile.sqlite';
 
 has schema => sub {
 	my $dbname = 'mongopile';
-	return DBI->connect( "dbi:SQLite:dbnmae=$DBFILE","","",
+	return DBI->connect( "dbi:SQLite:$DBFILE","","",
 	                    { RaiseError => 1, PrintError => 1} );
 };
 
