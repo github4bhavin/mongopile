@@ -6,6 +6,27 @@
 	height : 100px;
 }
 
+
+.rs-block , .rs-block-selected {
+	background-color: #FFF;
+	padding: 1px;
+	margin-bottom: 10px;
+	margin-top: 10px;
+	border-radius : 10px;
+	box-shadow: 0 0 10px #CCC;	
+}
+
+.rs-block-header{
+	height:70px;
+	width : 90%;
+	text-align:  center;
+	font-size : 34px;
+	font-family: 'Quicksand' , sans-serif;
+	padding : 5%;
+	padding-top: 5%;
+	color : #777;	
+}
+
 #log {
 	position : fixed;
 	bottom : 0px;
