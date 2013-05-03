@@ -1,4 +1,4 @@
-package mongopile::Dashboard;
+package mongopile::CORE::Dashboard;
 
 $VERSION = 1.0;
 use Mojo::Base 'Mojolicious::Controller';

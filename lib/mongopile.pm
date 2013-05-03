@@ -14,18 +14,24 @@ use DBI;
 use File::Basename          qw { dirname          };
 use File::Spec::Functions   qw { splitdir rel2abs };
 
+use mongopile::CORE::Replicasets; 
+use mongopile::DB;
+use mongopile::DB::Replicasets;
+
 my @BASEDIR = ( splitdir ( rel2abs( dirname( __FILE__ ) ) ) );
    pop @BASEDIR;
    push @INC , join '/' , @BASEDIR , 'lib' ;
 
 my $LOCKFILE = join '/' , @BASEDIR , 'etc' , 'mongopile.lock';
 my $PIDFILE  = join '/' , @BASEDIR , 'etc' , 'mongopile.pid' ;
-my $DBFILE   = join '/', @BASEDIR , 'data', 'mongopile.sqlite';
 
-has schema => sub {
-	my $dbname = 'mongopile';
-	return DBI->connect( "dbi:SQLite:$DBFILE","","",
-	                    { RaiseError => 1, PrintError => 1} );
+
+has core_replicasets => sub {
+    return new mongopile::CORE::Replicasets();
+};
+
+has db_replicasets => sub {
+    return new mongopile::DB::Replicasets();
 };
 
 #
@@ -48,16 +54,22 @@ sub startup {
   $self->plugin('RenderFile');
 
   #___Register helpers
-  $self->helper( db => sub { $self->app->schema } );
+  #  $self->helper( db         => sub { $self->app->schema } );
 
+  $self->helper( core_replicasets => sub { $self->app->core_replicaset } );
+  $self->helper( db_replicasets   => sub { $self->app->db_replicasets   } );
+  
   #___ Public routes
      $ROUTES->get('/')->to( controller => 'Dashboard' , action => 'show' );
      $ROUTES->get('/dashboard')->to( controller => 'Dashboard' , action => 'show' );
 
      
-  my $REPLICASET_ROUTES = $ROUTES->bridge('replicasets')->to( controller=> 'Replicasets' , action => 'access');
-     $REPLICASET_ROUTES->get('getall')->to(controller => 'Replicasets' , action => 'get_all' ); 
-     $REPLICASET_ROUTES->post('/add')->to(controller => 'Replicasets' , action => 'add' );        
+  my $REPLICASET_ROUTES = $ROUTES->bridge('replicasets')
+                       ->to( controller => 'GUI::Replicasets' , action => 'access'  );
+     $REPLICASET_ROUTES->get('getall')
+                       ->to( controller => 'GUI::Replicasets' , action => 'get_all' ); 
+     $REPLICASET_ROUTES->post('/add')
+                       ->to( controller => 'GUI::Replicasets' , action => 'add'     );        
 
 }
 

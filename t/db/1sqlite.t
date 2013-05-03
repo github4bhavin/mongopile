@@ -30,7 +30,9 @@ subtest 'SQLite Tests' => sub {
 		 
 		 ok ( unlink ($testDB) , 'removed DB'); 
      };
-
+     
+   done_testing();
+   
 };
 
 done_testing();
