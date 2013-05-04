@@ -12,11 +12,13 @@ BEGIN {
    pop @_PROJECT_DIR;
    pop @_PROJECT_DIR;
    push @INC , join '/', @_PROJECT_DIR , 'lib';
+   push @INC , join '/', @_PROJECT_DIR , 'mongopile';
+   push @INC , join '/', @_PROJECT_DIR , 'CORE';      
 };
 
-use_ok('mongopile::Replicasets');
+use_ok('mongopile::CORE::Replicasets');
 
-my $obj = new_ok('mongopile::Replicasets');
+my $obj = new_ok('mongopile::CORE::Replicasets');
    $obj->host('dfprdzwkvdb1.df.jabodo.com');
    $obj->port('28017');
 
