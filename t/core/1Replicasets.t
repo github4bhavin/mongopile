@@ -22,19 +22,37 @@ my $obj = new_ok('mongopile::CORE::Replicasets');
    $obj->host('dfprdzwkvdb1.df.jabodo.com');
    $obj->port('28017');
 
-   
+#___ METHODS EXIST TESt
 
+my @methods = ( 'new',
+               'get_status',
+               'host',
+               'port',
+               'http',
+               'error',
+               'rs_data',
+               'rs_name',
+               'get_members',
+               'get_stats_for_member',
+             );   
+
+map { can_ok( $obj , $_); } @methods;
+
+#___ FUNCTIONAL TESt
 SKIP: {
         my $rs_status;
         if ( !($rs_status = $obj->get_status() ) ) {
            diag $obj->error;
            skip 'no local mongo instance running' , 1 ;
         } 
-        use Data::Dumper;
-        diag Dumper $obj->rs_data;
-        diag $obj->host , " " , $obj->port , " " , $obj->rs_name; 
-        diag Dumper $obj->get_stats_for_member( 'dfprdzwkvdb1.df.jabodo.com', '27017' );
-        diag Dumper $obj->get_members();
+        
+        ok( $obj->get_members(), 'get members');
+        ok( $obj->host(), 'host');
+        ok( $obj->port(), 'port');
+        ok( $obj->http(), 'http');
+        ok( !defined($obj->error()), 'error');
+        ok( $obj->rs_data(),'rs_data');
+        ok( $obj->rs_name(), 'rs_name');
 };
 
  

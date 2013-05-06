@@ -5,6 +5,16 @@ $VERSION = 1.0;
 use DBI;
 use Data::Dumper;
 
+use File::Basename        qw { dirname           };
+use File::Spec::Functions qw { splitdir  rel2abs };
+
+my @BASEDIR;
+
+BEGIN {
+   @BASEDIR = splitdir( dirname( rel2abs( __FILE__ ) ) );
+   pop @BASEDIR;
+   pop @BASEDIR;
+};
 my $DBFILE   = join '/', @BASEDIR , 'data', 'mongopile.sqlite';
 
 sub new {
@@ -19,15 +29,20 @@ sub new {
 }
 
 sub _connection {
-    if(!$_[0]->{'dbh'}) {
+   my $self = shift;
+    if(!$self->{'dbh'}) {
        eval {
-	    $_[0]->{'dbh'} = DBI->connect( "dbi:SQLite:". $self->{ 'DBFILE' } ,"" ,"" ,
+	    $self->{'dbh'} = DBI->connect( "dbi:SQLite:". $self->get_dbfile() ,"" ,"" ,
 	                                   { RaiseError => 1, PrintError => 1} );
 	   };
-	   $self->error ( $@ ) if $@;
+	 if ($@) {
+	   $self->error( $@ );
+	   $self->error( $self->get_dbfile() );
+	 }
+	   
     }
 
-   return $_[0]->{'dbh'};
+   return $self->{'dbh'};
 }
 
 sub dbh {
@@ -45,4 +60,10 @@ sub error {
           $self->{ 'error' } = '';
        return $retval ;
    }
+}
+
+sub get_dbfile { 
+   my $self = shift;
+   $self->{'DBFILE'} = $DBFILE if !$self->{'DBFILE'}; 
+   return $self->{'DBFILE'};
 }

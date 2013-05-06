@@ -11,7 +11,6 @@ sub new {
    my $self  = {@_};
    bless $self, $class;
    $self->{'error'} = '';
-   #$self->{'dbh'} = $self->dbh();
    return $self;
 }
 
@@ -20,7 +19,6 @@ sub get_all_replicasets {
    my @_all_replicasets = ();
    
    eval {
-      
        my $_all_replicasets  = $self->dbh->selectall_arrayref( 'SELECT rs_name FROM replicasets' ,{ Slice => {} } ); 
        @_all_replicasets      = map { $_->{ rs_name } ;} @$_all_replicasets;
     };
@@ -31,7 +29,222 @@ sub get_all_replicasets {
    return @_all_replicasets;  
 }
 
+sub is_replicaset_present {
+   my $self = shift;
+   my $rs_name = shift;
+   my @dbrs;
+   
+   if(!$rs_name)
+     { $self->error("no replicaset name given");
+       return undef; }
 
+   eval {  @dbrs = @{$self->dbh->selectrow_arrayref("SELECT rs_name FROM replicasets WHERE rs_name='$rs_name'") };  };         
+   
+   if($@)
+     { $self->error($@);
+       return undef; }
+       
+  return ($dbrs[0]) ? 1 : undef;       
+}
+
+sub is_member_present {
+   my $self = shift;
+   my ($host,$port,$rs_name) = (@_);
+   my @dbmember;
+   
+   return undef if ( !$host || !$port || !$rs_name );
+   eval {  
+   @dbmember = @{$self->dbh->selectrow_arrayref(
+            join "", ("SELECT host,port,rs_name FROM mongohost WHERE host='$host'",
+                      " AND port=$port AND rs_name='$rs_name'"                    )) };  
+   };         
+   
+   if($@)
+     { $self->error($@);
+       return undef; }
+       
+  return ($dbmember[0]) ? 1 : undef;
+   
+}
+
+sub is_stats_present_for_member {
+   my $self = shift;
+   my ($host,$port) = (@_);
+   my @dbstats;
+   
+   return undef if ( !$host || !$port );
+   eval { @dbstats = 
+          @{$self->dbh->selectrow_arrayref("SELECT timestamp FROM stats WHERE host='$host' AND port=$port" ) };  
+   };         
+   
+   if($@)
+     { $self->error($@);
+       return undef; }
+       
+  return ($dbstats[0]) ? 1 : undef;
+   
+}
+
+
+#--- ADD record section
+
+# add_to_replicasets( $rs_name , $rs_status:1 )
+sub add_to_replicasets {
+   my $self = shift;
+   my ($rs_name,$rs_status) = (@_);
+   
+   $rs_status = 1 if !defined($rs_status);
+   
+   if(!$rs_name)
+     { $self->error("[add_to_replicaset] no replicaset given! ");
+       return undef;}
+       
+   if($self->is_replicaset_present($rs_name))
+     { $self->error("[add_to_replicaset] replicaset present in db !");
+       return undef; }
+       
+   eval{ $self->dbh->do( "INSERT INTO replicasets(rs_name,rs_status) VALUES('$rs_name',$rs_status)" ); };
+   
+   if($@)
+     { $self->error("[add_to_replicaset] $@");
+       return undef; }
+       
+   return 1;    
+}
+
+sub add_to_mongohost {
+   my $self = shift;
+   my ($rs_name, $host, $port ) = (@_);
+   
+   if(!$rs_name)
+     { $self->error("[add_to_mongohost] no replicaset given! ");
+       return undef;}   
+ 
+   if(!$self->is_replicaset_present($rs_name))
+     { $self->error("[add_to_mongohost] replicaset NOT present in db !");
+       return undef; }
+   
+   if(!$host)
+     { $self->error("[add_to_mongohost] no host given! ");
+       return undef;}   
+
+   if(!$port)
+     { $self->error("[add_to_mongohost] no port given! ");
+       return undef;}          
+
+   #--- check if host:port:replicaset exists in db.
+   
+   if($self->is_member_present($host,$port,$rs_name))
+      { $self->error("[add_to_mongohost] member already present!");
+        return undef;                                             }
+        
+   eval{ $self->dbh->do( "INSERT INTO mongohost(host,port,rs_name) VALUES('$host',$port,'$rs_name')" ); };
+   
+   if($@)
+     { $self->error("[add_to_mongohost] $@");
+       return undef; }
+       
+   return 1;       
+}
+
+sub add_to_stats {
+   my $self = shift;
+   my ($host,$port,$stats) = (@_);
+
+   if(!$host)
+     { $self->error("[add_to_stats] no host given! ");
+       return undef;}   
+
+   if(!$port)
+     { $self->error("[add_to_stats] no port given! ");
+       return undef;}
+                 
+   if(!$stats)
+     { $self->error("[add_to_stats] no stats given! ");
+       return undef;}
+
+   if($self->is_stats_present_for_member($host,$port) )
+     { $self->error("[add_to_stats] stats present! ");
+       return undef;}
+     
+   eval{ $self->dbh->do( 
+       join "" , ( "INSERT INTO stats(host,port,optime,optime_date,last_heart_beat,health,state,ping_ms,timestamp) VALUES( ",
+                   "'$host'"                  , ",", 
+                     $port                    , ",",
+                     $stats->{'optime'       }, ",",
+                     $stats->{'optimeDate'   }, ",",
+                     $stats->{'lastHeartbeat'}, ",",
+                     $stats->{'health'       }, ",",
+                     $stats->{'state'        }, ",",
+                     $stats->{'pingMs'       }, ",",
+                     localtime()              , ")"
+                  ) ); 
+       };
+ 
+   if($@)
+     { $self->error("[add_to_stats] $@");
+       return undef; }
+       
+   return 1;
+}
+
+#---- REMOVE methods
+
+sub _remove_replicaset {
+   my $self = shift;
+   my $rs_name = shift || return undef;
+   
+   eval{ $self->dbh->do( "DELETE FROM replicasets WHERE rs_name='$rs_name'" ); };
+   
+   if($@)
+     { $self->error("[_remove_replicaset] $@");
+       return undef; }
+       
+   return 1;       
+}
+
+sub _remove_all_members_for_replicaset {
+   my $self = shift;
+   my $rs_name = shift || return undef;
+
+   eval{ $self->dbh->do( "DELETE FROM mongohost WHERE rs_name='$rs_name'" ); };
+   
+   if($@)
+     { $self->error("[_remove_all_members_for_replicasets] $@");
+       return undef; }
+       
+   return 1;   
+}
+
+sub _remove_member {
+   my $self = shift;
+   my ($rs_name,$rs_host,$rs_port) = (@_);
+   
+   return if (!$rs_host || !$rs_port);
+
+   eval{ $self->dbh->do( "DELETE FROM mongohost WHERE host='$rs_host' AND port=$rs_port AND rs_name='$rs_name'" ); };
+   
+   if($@)
+     { $self->error("[_remove_member] $@");
+       return undef; }
+   return 1;       
+}
+
+sub _remove_stats_for_member {
+ my $self = shift;
+   my ($rs_host,$rs_port) = (@_);
+   
+   return if (!$rs_host || !$rs_port);
+
+   eval{ $self->dbh->do( "DELETE FROM stats WHERE host='$rs_host' AND port=$rs_port" ); };
+   
+   if($@)
+     { $self->error("[_remove_stats_for_member] $@");
+       return undef; }
+   return 1;  
+}
+
+#--- CREATE TABLEs section
 sub __create_blank_db {
   my $self = shift;
   my %___TABLES = (
@@ -60,7 +273,8 @@ sub __create_blank_db {
               'health INTEGER ,',
               'state INTEGER ,',
               'ping_ms INTEGER ,',
-              'PRIMARY KEY(host,port)',
+              'timestamp INTEGER,',
+              'PRIMARY KEY(host,port,timestamp)',
           ')'
         ],
       
@@ -79,7 +293,7 @@ sub __create_blank_db {
      if( $@ )
        { $self->error ( "$@", join ('' , @{$___TABLES{ $_table }} ) ); }
        
-     if( !$DBI::err )
+     if( !$self->dbh->err )
        { $self->error("$_table created!"); }
      else
        { $self->error("unable to create $_table " . $DBI::errstr ); }

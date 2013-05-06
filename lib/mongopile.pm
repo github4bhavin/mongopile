@@ -56,7 +56,7 @@ sub startup {
   #___Register helpers
   #  $self->helper( db         => sub { $self->app->schema } );
 
-  $self->helper( core_replicasets => sub { $self->app->core_replicaset } );
+  $self->helper( core_replicasets => sub { $self->app->core_replicasets  } );
   $self->helper( db_replicasets   => sub { $self->app->db_replicasets   } );
   
   #___ Public routes

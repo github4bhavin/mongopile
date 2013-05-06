@@ -38,7 +38,7 @@ sub get_status {
    eval { $_data = Mojo::JSON->decode ( $_json_data ); };
    
    if ($@)
-      { $self->{'error'} = $@;
+      { $self->error($@);
         return undef; }
   else 
       {
@@ -57,7 +57,7 @@ sub get_status {
        $self->host('');
        $self->port('');
        return $_data; 
-       }
+      }
    
 }
 
@@ -84,7 +84,14 @@ sub http {
 
 sub error {
    my $self = shift;
-   return $self->{ 'error' };
+   my @new_val = @_;
+   if ( @new_val ){
+       $self->{ 'error' } = $self->{ 'error' } . join ' ', @new_val;
+   } else { 
+       my $retval = $self->{'error'};
+          $self->{ 'error' } = '';
+       return $retval ;
+   }
 }
 
 sub rs_data {

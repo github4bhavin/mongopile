@@ -45,18 +45,40 @@ sub add {
      $rs_port = 28017 if !$rs_port;
 
      $self->render if !$rs_host;
-     $self->replicaset->host( $rs_host );
-     $self->replicaset->port( $rs_port );
-     $self->replicaset->get_status();
+     $self->core_replicasets->host( $rs_host );
+     $self->core_replicasets->port( $rs_port );
+    
+     if(!$self->core_replicasets->get_status())
+       { $self->error( $self->core_replicasets->error());}
    
-     $self->_add_new_replicaset_to_db( );
+
+    if( $self->db_replicasets->add_to_replicasets( $self->core_replicasets->rs_name(), 1 ) )
+       { }   
+   
+   $self->app->log->debug( Dumper $self->core_replicasets->rs_data() );
+   
+   my @rs_members = $self->core_replicasets->get_members();
+      
+   foreach my $rs_member( @rs_members ){
+      my($_rs_host,$_rs_port)  = split ':', $rs_member;
+
+      if( $self->db_replicasets->add_to_mongohost( $self->core_replicasets->rs_name(), $_rs_host,$_rs_port ) )
+        { }
+
+      my $stats = $self->core_replicasets->get_stats_for_member( $_rs_host,$_rs_port );
+      
+      if( $self->db_replicasets->add_to_stats( $_rs_host,$_rs_port,$stats ) )
+        { }
+        
+   }   
   
-  if( $self->{'error'} ){
-     $self->stash( error => $self->{'error'} );
-     $self->render(json => { error => $self->{'error'} } );
-  } else {
-     $self->render(json => { success => 'success' } );  
-  }
+
+  if(my $_error = $self->error())
+    { $self->render(json => { error => $_error } ); 
+      $self->app->log->debug( $_error );
+       undef $_error;                                      }
+  else
+    { $self->render(json => { success => 'success'    } ); }
 
 }
 
@@ -113,6 +135,8 @@ sub _get_replicaset_status_from_host {
 sub _add_new_replicaset_to_db {
    my $self = shift;
 
+
+   
    if(!$self->replicaset->rs_name)
      { $self->app->log->debug("Unable to get replicaset name!");
        $self->{'error'} = 'no replicaset name'; 
@@ -218,32 +242,25 @@ sub _update_stats_for_member {
        $self->{'error' } = 'stats error'; }
 }
 
-
-
-sub _is_replicaset_present {
-   my $self        = shift;
-   my $rs_name     = shift;
-   my $_rs_db_val  = undef;
-   
-   eval { 
-   $_rs_db_val = $self->db->selectrow_arrayref("SELECT rs_name from replicasets where rs_name='$rs_name'");
-   };
-   
-   if($@)
-     { $self->app->log->error("$@ ". $DBI::errstr);
-       return undef; }
-   if( !defined ( $_rs_db_val ) )
-     { $self->app->log->warn("rs not found $rs_name" );
-       return undef; }
-   if( $rs_name eq $_rs_db_val->[0])    
-     { $self->app->log->info("rs found $rs_name" );
-       return 1; }
-}
-
 sub _replicaset_health_status {
   my $self = shift;
   my $replicaset = shift;
   
      
   
+}
+
+
+sub error {
+   my $self = shift;
+   my @new_val = @_;
+   if ( @new_val ){
+       $self->{ 'error' } = $self->{ 'error' } . join ' ', @new_val;
+   } else { 
+       my $retval  = $self->{'error'};
+          $retval .= $self->core_replicasets->error();
+          $retval .= $self->db_replicasets->error();
+          $self->{ 'error' } = '';
+       return $retval ;
+   }
 }
