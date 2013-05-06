@@ -19,7 +19,17 @@ my @BASEDIR;
 BEGIN {
    @BASEDIR = ( splitdir ( rel2abs( dirname( __FILE__ ) ) ) );
    pop @BASEDIR;
-   push @INC , join '/' , @BASEDIR , 'lib' ;
+
 };
 my $LOCKFILE = join '/' , @BASEDIR , 'etc' , 'mongopile.lock';
 my $PIDFILE  = join '/' , @BASEDIR , 'etc' , 'mongopile.pid' ;
+
+
+sub new {
+  my $class = shift;
+  my $self  = {@_};
+  bless $self , $class;
+  return $self;
+}
+
+1;

@@ -6,7 +6,10 @@ use Test::Harness;
 my @_BASIC_TESTS   = glob "t/basic/*.t";
 my @_DB_TESTS      = glob "t/db/*.t";
 my @_CORE_TESTS    = glob "t/core/*.t";
+my @_COMMON        = glob "t/*.t";
 
 runtests ( @_BASIC_TESTS , 
            @_DB_TESTS    ,
-           @_CORE_TESTS  );
+           @_CORE_TESTS  ,
+           @_COMMON      , 
+         );
