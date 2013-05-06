@@ -32,56 +32,62 @@ sub get_all_replicasets {
 sub is_replicaset_present {
    my $self = shift;
    my $rs_name = shift;
-   my @dbrs;
+   my $_dbrs;
    
    if(!$rs_name)
      { $self->error("no replicaset name given");
        return undef; }
 
-   eval {  @dbrs = @{$self->dbh->selectrow_arrayref("SELECT rs_name FROM replicasets WHERE rs_name='$rs_name'") };  };         
+   eval { $_dbrs = $self->dbh->selectrow_arrayref("SELECT rs_name FROM replicasets WHERE rs_name='$rs_name'"); };  
+    
+   return undef if !$_dbrs;
    
    if($@)
      { $self->error($@);
        return undef; }
        
-  return ($dbrs[0]) ? 1 : undef;       
+  return 1;       
 }
 
 sub is_member_present {
    my $self = shift;
    my ($host,$port,$rs_name) = (@_);
-   my @dbmember;
+   my $dbmember;
    
    return undef if ( !$host || !$port || !$rs_name );
    eval {  
-   @dbmember = @{$self->dbh->selectrow_arrayref(
+   $dbmember = $self->dbh->selectrow_arrayref(
             join "", ("SELECT host,port,rs_name FROM mongohost WHERE host='$host'",
-                      " AND port=$port AND rs_name='$rs_name'"                    )) };  
-   };         
+                      " AND port=$port AND rs_name='$rs_name'"                    ));
+   };  
    
+   return undef if !$dbmember;
+      
    if($@)
      { $self->error($@);
        return undef; }
        
-  return ($dbmember[0]) ? 1 : undef;
+  return 1;
    
 }
 
 sub is_stats_present_for_member {
    my $self = shift;
    my ($host,$port) = (@_);
-   my @dbstats;
+   my $dbstats;
    
    return undef if ( !$host || !$port );
-   eval { @dbstats = 
-          @{$self->dbh->selectrow_arrayref("SELECT timestamp FROM stats WHERE host='$host' AND port=$port" ) };  
+   eval { $dbstats = 
+          $self->dbh->selectrow_arrayref("SELECT timestamp FROM stats WHERE host='$host' AND port=$port" );  
    };         
+   
+   return undef if !$dbstats;
    
    if($@)
      { $self->error($@);
        return undef; }
        
-  return ($dbstats[0]) ? 1 : undef;
+  return 1;
    
 }
 
