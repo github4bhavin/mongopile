@@ -99,7 +99,7 @@ sub rs_name {
 
 sub get_members {
    my $self = shift;
-   return keys ($self->{ 'rs_data' }->{ $self->rs_name } );
+   return keys ( %{$self->{ 'rs_data' }->{ $self->rs_name }} );
 }
 
 sub get_stats_for_member {
