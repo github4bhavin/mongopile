@@ -50,10 +50,13 @@ can_ok( $obj->dbh , 'selectall_arrayref' );
 #__methods exist check
 map { can_ok( $obj , $_) } @methods;
 
+#___ CREATE DB if not exist
+
+diag $obj->error() unless ok( $obj->__create_blank_db() ,"create blank db " );
 
 #___FUNCTIONAL TEST
 
-ok( $obj->add_to_replicasets( 'dummy', 1    ) ,'insert replicasets' );
+diag $obj->error() unless ok( $obj->add_to_replicasets( 'dummy', 1    ) ,'insert replicasets' );
 
 ok( $obj->add_to_mongohost( 'dummy', 'dummy_host', 1234 ) , 'insert mongohost');
 ok( $obj->add_to_mongohost( 'dummy', 'dummy_host2', 1234 ) , 'insert mongohost');

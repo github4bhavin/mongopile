@@ -106,7 +106,8 @@ sub rs_name {
 
 sub get_members {
    my $self = shift;
-   return keys ( %{$self->{ 'rs_data' }->{ $self->rs_name }} );
+   return undef if !$self->rs_name;
+   return ($self->{'rs_data'}->{ $self->rs_name }) ? keys ( %{$self->{ 'rs_data' }->{ $self->rs_name }} ) : undef;
 }
 
 sub get_stats_for_member {

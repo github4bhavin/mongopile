@@ -16,7 +16,9 @@ BEGIN {
 my %mongopileRequiredModules = 
    (
        'mongopile' => 1.0,
-       'mongopile::config' => 1.0
+       'mongopile::config' => 1.0,
+	   'DBI'       => 0,
+	   'DBD::SQLite' => 0,
    );
    
  
