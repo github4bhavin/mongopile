@@ -27,6 +27,10 @@
 	color : #777;	
 }
 
+.rs-block-details {
+	height : 70px;	
+}
+
 #log {
 	position : fixed;
 	bottom : 0px;

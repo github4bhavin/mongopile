@@ -115,17 +115,29 @@ function getAllRS(){
      $("#RSPannel").append( '<div class="row-fluid">' + rsPannel.join("") + '</div>' );
      
      $.each(data['replicasets'],function(key, rsName){
+     	if (rsName == 'addNewRS') { return };
         //___draw charts.
         $.getJSON('replicasets/getReplicasetState?rs='+rsName,function(data){
      	    var gdata = new google.visualization.DataTable();
      	    gdata.addColumn('string','state');
      	    gdata.addColumn('number','no');
      	    gdata.addRows([
-     	         ['up',data.up],
+     	         ['up'  ,data.up  ],
      	         ['down',data.down]
      	    ]);  
      	 
-     	    $("#log").append( JSON.stringify(gdata) );
+     	   // $("#log").append( JSON.stringify(gdata) );
+     	    var options = { 'title'  : '',
+     	                    'width'  : 70,
+     	                    'height' : 70,
+     	                    'colors' : ['#555','#fff'],
+     	                    'tooltip': { 'isHtml' : false , 'fontSize' : '12px' },
+     	                    'chartArea' : { left: 0, top : 0, height : 50 , width:50 },
+     	                    'fontSize' : '30px',
+     	                    'legend' : {'position' : 'none'}
+     	                 };
+           var chart = new google.visualization.PieChart( document.getElementById(rsName) );
+           chart.draw(gdata,options);
         });
      });
      

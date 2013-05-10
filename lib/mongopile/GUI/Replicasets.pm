@@ -86,7 +86,7 @@ sub get_replicaset_state {
    my $self = shift;
    my $rs_name = $self->param('rs');
    $self->render( json => { 'error' => 'no rs param found!' } ) if !$rs_name;
-   my %state = ( 'up' => 0 , 'down' => 0 );
+   my %state = ( 'up' => 0 , 'down' => 2 );
    
    my @members = $self->db_replicasets->get_all_members($rs_name);
    foreach my $member (@members){
