@@ -16,5 +16,5 @@ BEGIN {
 use_ok( 'mongopile::StatsCollector' );
 
 my $obj = new_ok( 'mongopile::StatsCollector');
-
- done_testing;
+ok( $obj->start_collection(), 'start collecting data');   
+done_testing;

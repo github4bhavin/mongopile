@@ -70,6 +70,8 @@ sub startup {
                        ->to( controller => 'GUI::Replicasets' , action => 'get_all' ); 
      $REPLICASET_ROUTES->post('/add')
                        ->to( controller => 'GUI::Replicasets' , action => 'add'     );        
+     $REPLICASET_ROUTES->get('/getReplicasetState')
+                       ->to( controller => 'GUI::Replicasets' , action => 'get_replicaset_state' );        
 
 }
 

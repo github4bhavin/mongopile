@@ -1,9 +1,17 @@
 % layout 'default';
 % title 'mongoPile | Dashboard ';
 
+%= javascript "https://www.google.com/jsapi"
+
 %= javascript begin
 
+google.load( 'visualization', '1.0', { 'packages':['corechart'] } );
+
 $(document).ready(function(){
+	
+   // load google visualization
+   google.setOnLoadCallback( drawAllCharts () );
+	
    getAllRS();
 	
    $("#RSPannel").on('click',".rs-block",function(){
@@ -79,6 +87,9 @@ function getAllRS(){
      	                       '<div class="rs-block-header">',
        	                            rsName,
      	                       '</div>',
+     	                       '<div class="rs_block-details">',
+     	                          '<div id='+rsName +'></div>',
+     	                       '</div>',
      	                    '</div>',
      	                 '</div>',     	                 
      	               ];
@@ -103,6 +114,21 @@ function getAllRS(){
      
      $("#RSPannel").append( '<div class="row-fluid">' + rsPannel.join("") + '</div>' );
      
+     $.each(data['replicasets'],function(key, rsName){
+        //___draw charts.
+        $.getJSON('replicasets/getReplicasetState?rs='+rsName,function(data){
+     	    var gdata = new google.visualization.DataTable();
+     	    gdata.addColumn('string','state');
+     	    gdata.addColumn('number','no');
+     	    gdata.addRows([
+     	         ['up',data.up],
+     	         ['down',data.down]
+     	    ]);  
+     	 
+     	    $("#log").append( JSON.stringify(gdata) );
+        });
+     });
+     
   });
   
 }
@@ -120,6 +146,9 @@ function log(message,clearflag,type){
     }else {
         $("#log").html( '<span class="'+ typeClass[type] +'">' + message + '</span>' );    	
     }	
+}
+
+function drawAllCharts (){
 }
 
 %= end

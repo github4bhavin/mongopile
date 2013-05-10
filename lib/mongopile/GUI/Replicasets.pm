@@ -82,6 +82,19 @@ sub add {
 
 }
 
+sub get_replicaset_state {
+   my $self = shift;
+   my $rs_name = $self->param('rs');
+   $self->render( json => { 'error' => 'no rs param found!' } ) if !$rs_name;
+   my %state = ( 'up' => 0 , 'down' => 0 );
+   
+   my @members = $self->db_replicasets->get_all_members($rs_name);
+   foreach my $member (@members){
+       ($self->db_replicasets->get_member_state( $member->{'host'}, $member->{'port'} ) )?
+       $state{'up'}++ : $state{'down'}++;
+   }
+   $self->render( json => \%state  );
+}
 
 #_____ All Methods below are specific to replicasets 
 #_____ extract information from replicasets

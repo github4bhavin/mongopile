@@ -29,6 +29,39 @@ sub get_all_replicasets {
    return @_all_replicasets;  
 }
 
+sub get_all_members {
+   my $self = shift;
+   my $rs_name = shift || return;
+   my @all_members;
+   
+   eval {
+         my $_all_members  = $self->dbh->selectall_arrayref( "SELECT host,port FROM mongohost WHERE rs_name='$rs_name'" ,{ Slice => {} } );
+         @all_members = @{$_all_members} if $_all_members; 
+    };
+    
+    if($@)
+      { $self->error("$@ ". $DBI::errstr); }
+      
+   return @all_members;   
+}
+
+sub get_member_state {
+   my $self = shift;
+   my ($host, $port) = @_;
+   my $health = 0;
+   eval {
+         $health = $self->dbh->selectrow_arrayref( join '', ( 
+         "SELECT health FROM stats WHERE ",
+         "host='$host' AND port=$port ",
+         "ORDER BY timestamp desc LIMIT 1",
+         ) ); 
+   };
+    
+   if($@)
+     { $self->error("$@ ". $DBI::errstr); } 
+   return $health->[0];    
+}
+
 sub is_replicaset_present {
    my $self = shift;
    my $rs_name = shift;
@@ -170,8 +203,7 @@ sub add_to_stats {
        return undef;}
 
    if($self->is_stats_present_for_member($host,$port) )
-     { $self->error("[add_to_stats] stats present! ");
-       return undef;}
+     { $self->error("[add_to_stats] stats present! "); }
      
    eval{ $self->dbh->do( 
        join "" , ( "INSERT INTO stats(host,port,optime,optime_date,last_heart_beat,health,state,ping_ms,timestamp) VALUES( ",

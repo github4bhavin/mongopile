@@ -20,6 +20,8 @@ BEGIN {
 
 my @methods = ( 'new'                        ,
                 'get_all_replicasets'        , 
+                'get_all_members'            , 
+                'get_member_state'           ,
                 'is_replicaset_present'      ,
                 'is_member_present'          ,
                 'is_stats_present_for_member',
@@ -58,18 +60,25 @@ diag $obj->error() unless ok( $obj->__create_blank_db() ,"create blank db " );
 
 diag $obj->error() unless ok( $obj->add_to_replicasets( 'dummy', 1    ) ,'insert replicasets' );
 
-ok( $obj->add_to_mongohost( 'dummy', 'dummy_host', 1234 ) , 'insert mongohost');
-ok( $obj->add_to_mongohost( 'dummy', 'dummy_host2', 1234 ) , 'insert mongohost');
+diag $obj->error() unless ok( $obj->add_to_mongohost( 'dummy', 'dummy_host', 1234 ) , 'insert mongohost');
+diag $obj->error() unless ok( $obj->add_to_mongohost( 'dummy', 'dummy_host2', 1234 ) , 'insert mongohost');
 
-ok( $obj->add_to_stats('dummy_host',1234,$_dummy_data->{'dummy'}->{'dummy_host:1234'} ) ,'insert stats');
-ok( $obj->add_to_stats('dummy_host2',1234,$_dummy_data->{'dummy'}->{'dummy_host:1234'} ) ,'insert stats');
+diag $obj->error() unless ok( $obj->add_to_stats('dummy_host',1234,$_dummy_data->{'dummy'}->{'dummy_host:1234'} ) ,'insert stats');
+diag $obj->error() unless ok( $obj->add_to_stats('dummy_host2',1234,$_dummy_data->{'dummy'}->{'dummy_host:1234'} ) ,'insert stats');
 
-ok( $obj->_remove_replicaset('dummy'), 'remove replicaset dummy');
+diag $obj->error() unless ok( $obj->get_all_members('dummy'), 'get all members of dummy');
+diag Dumper $obj->get_all_members('dummy');
 
-ok( $obj->_remove_member('dummy','dummy_host',1234 ) ,'remove dummy_host from dummy' );
-ok( $obj->_remove_all_members_for_replicaset('dummy' ) ,'remove all members for dummy' );
+diag $obj->error() unless ok( $obj->get_member_state('dummy_host',1234), 'dummy_host last health status');
+diag Dumper $obj->get_member_state('dummy_host','1234');
 
-ok( $obj->_remove_stats_for_member( 'dummy_host', 1234 ) ,'remove stats for dummy_host');
-ok( $obj->_remove_stats_for_member( 'dummy_host2', 1234 ) ,'remove stats for dummy2_host');
+diag $obj->error() unless ok( $obj->_remove_replicaset('dummy'), 'remove replicaset dummy');
+
+diag $obj->error() unless ok( $obj->_remove_member('dummy','dummy_host',1234 ) ,'remove dummy_host from dummy' );
+diag $obj->error() unless ok( $obj->_remove_all_members_for_replicaset('dummy' ) ,'remove all members for dummy' );
+
+diag $obj->error() unless ok( $obj->_remove_stats_for_member( 'dummy_host', 1234 ) ,'remove stats for dummy_host');
+diag $obj->error() unless ok( $obj->_remove_stats_for_member( 'dummy_host2', 1234 ) ,'remove stats for dummy2_host');
+
 
 done_testing();

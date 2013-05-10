@@ -19,3 +19,4 @@ $ENV { MOJO_APP  } = 'mongopile';
 $ENV { MOJO_MODE } = 'development';
 
 Mojolicious::Commands->start();
+
