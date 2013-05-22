@@ -74,10 +74,10 @@ diag Dumper $obj->get_member_state('dummy_host','1234');
 
 diag $obj->error() unless ok( $obj->_remove_replicaset('dummy'), 'remove replicaset dummy');
 
-diag $obj->error() unless ok( $obj->_remove_member('dummy','dummy_host',1234 ) ,'remove dummy_host from dummy' );
+diag $obj->error() unless ok( $obj->_remove_member('dummy','dummy_host',1234 )   ,'remove dummy_host from dummy' );
 diag $obj->error() unless ok( $obj->_remove_all_members_for_replicaset('dummy' ) ,'remove all members for dummy' );
 
-diag $obj->error() unless ok( $obj->_remove_stats_for_member( 'dummy_host', 1234 ) ,'remove stats for dummy_host');
+diag $obj->error() unless ok( $obj->_remove_stats_for_member( 'dummy_host' , 1234 ) ,'remove stats for dummy_host' );
 diag $obj->error() unless ok( $obj->_remove_stats_for_member( 'dummy_host2', 1234 ) ,'remove stats for dummy2_host');
 
 
