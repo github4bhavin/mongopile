@@ -16,7 +16,11 @@ BEGIN {
 use_ok( 'mongopile::StatsCollector' );
 
 my $obj = new_ok( 'mongopile::StatsCollector');
+<<<<<<< HEAD
 
 can_ok ( $obj , 'get_status_for_all_replicasets' );
 
+=======
+ok( $obj->get_status_for_all_replicasets(), 'get status ');   
+>>>>>>> 67f449e3909a919f816fa8a31c1df22674330f71
 done_testing;

@@ -18,5 +18,5 @@ use mongopile 1.0;
 $ENV { MOJO_APP  } = 'mongopile';
 $ENV { MOJO_MODE } = 'development';
 
-Mojolicious::Commands->start();
+Mojolicious::Commands->start_app('mongopile');
 

@@ -52,7 +52,7 @@ sub get_status_for_all_replicasets {
 
        map { @_results = $_->join(); } @mp_threads;
     }
-     
+    return 1; 
 }
 
 #----- THREADS

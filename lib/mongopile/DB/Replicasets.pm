@@ -131,7 +131,7 @@ sub is_stats_present_for_member {
 sub add_to_replicasets {
    my $self = shift;
    my ($rs_name,$rs_status) = (@_);
-   
+
    $rs_status = 1 if !defined($rs_status);
    
    if(!$rs_name)
@@ -338,6 +338,13 @@ sub __create_blank_db {
      
   }
  
+}
+
+sub _clean_input {
+	my $self = shift;
+	my $input = shift || return ;
+	$input =~ s/(['"])/\\$1/g;
+	return $input;
 }
 
 sub error {
