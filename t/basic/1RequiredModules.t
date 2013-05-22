@@ -15,13 +15,21 @@ BEGIN {
 
 my %mongopileRequiredModules = 
    (
-       'mongopile' => 1.0,
+       'mongopile'         => 1.0,
        'mongopile::config' => 1.0,
-	   'DBI'       => 0,
-	   'DBD::SQLite' => 0,
+	   'DBI'               => 0,
+	   'DBD::SQLite'       => 0,
+	   'Mojolicious'       => 0,
+	   'File::Basename'    => 0,
+	   'File::Spec::Functions' => 0,
+	   'mongopile::DB'     => 0,
+	   'mongopile::CORE::Replicasets' => 0,
+	   'mongopile::DB::Replicasets'   => 0,
+	   'Storable'          => 0,
+	   'Data::Dumper'      => 0,
+	   'threads'           => 0,
    );
-   
- 
+      use_ok( 'Mojolicious::Commands' );
  map { use_ok ( $_ , $mongopileRequiredModules { $_} ); } keys %mongopileRequiredModules;
  
  done_testing;

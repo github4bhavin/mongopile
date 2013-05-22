@@ -42,6 +42,7 @@ sub add {
      
   #__check if defiend $new_rs_url
   my ($rs_host,$rs_port) = split ':', $new_rs_url;
+  
      $rs_port = 28017 if !$rs_port;
 
      $self->render if !$rs_host;
@@ -86,13 +87,15 @@ sub get_replicaset_state {
    my $self = shift;
    my $rs_name = $self->param('rs');
    $self->render( json => { 'error' => 'no rs param found!' } ) if !$rs_name;
-   my %state = ( 'up' => 0 , 'down' => 2 );
+   my %state = ( 'up' => 0 , 'down' => 0 );
    
    my @members = $self->db_replicasets->get_all_members($rs_name);
    foreach my $member (@members){
        ($self->db_replicasets->get_member_state( $member->{'host'}, $member->{'port'} ) )?
        $state{'up'}++ : $state{'down'}++;
    }
+   $state{'up'} = 5;
+   $state{'down'} = 10;
    $self->render( json => \%state  );
 }
 

@@ -16,5 +16,5 @@ BEGIN {
 use_ok( 'mongopile::StatsCollector' );
 
 my $obj = new_ok( 'mongopile::StatsCollector');
-ok( $obj->start_collection(), 'start collecting data');   
+ok( $obj->get_status_for_all_replicasets(), 'get status ');   
 done_testing;

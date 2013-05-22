@@ -130,11 +130,12 @@ function getAllRS(){
      	    var options = { 'title'  : '',
      	                    'width'  : 70,
      	                    'height' : 70,
-     	                    'colors' : ['#555','#fff'],
+     	                    'colors' : ['#505030','#500000'],
      	                    'tooltip': { 'isHtml' : false , 'fontSize' : '12px' },
-     	                    'chartArea' : { left: 0, top : 0, height : 50 , width:50 },
+     	                    'chartArea' : { left: 10, top : 0, height : 50 , width:50 },
      	                    'fontSize' : '30px',
-     	                    'legend' : {'position' : 'none'}
+     	                    'legend' : {'position' : 'none'},
+							'tooltip.textStyle' : {'fontSize' : '30px'}
      	                 };
            var chart = new google.visualization.PieChart( document.getElementById(rsName) );
            chart.draw(gdata,options);
