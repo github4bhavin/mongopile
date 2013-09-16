@@ -3,13 +3,16 @@
 use Test::More;
 use Test::Harness;
 
-my @_BASIC_TESTS   = glob "t/basic/*.t";
-my @_DB_TESTS      = glob "t/db/*.t";
-my @_CORE_TESTS    = glob "t/core/*.t";
-my @_COMMON        = glob "t/*.t";
+my @COMMON        = glob "t/*.t";
+my @BASIC_TESTS   = glob "t/basic/*.t";
+my @DB_TESTS      = glob "t/db/*.t";
+my @CORE_TESTS    = glob "t/core/*.t";
+my @CORE_REPLICASETS_MEMEBER = glob "t/core/Replicasets/*.t";
 
-runtests ( @_BASIC_TESTS , 
-           @_DB_TESTS    ,
-           @_CORE_TESTS  ,
-           @_COMMON      , 
+runtests ( 
+	       @COMMON      ,
+		   @BASIC_TESTS , 
+           @DB_TESTS    ,
+           @CORE_TESTS  ,
+ 		   @CORE_REPLICASETS_MEMBER ,
          );
