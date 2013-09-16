@@ -1,0 +1,40 @@
+Replicaset:
+  replicasetName
+  members:
+  	 memberid, name, health, state, stateStr, uptime, optime, optimedate, lastheartbeat , pingMs
+    
+    systeminfo: 
+     version, gitVersion, sysInfo, Version , bits, debug , maxBsonObjectSize
+     
+    cursorInfo:
+       totalOpen, clientCursor_size, timedOut
+       
+    feature:
+       js , oidMachine
+       
+    isMaster:
+       setName, ismaster, secondary, hosts, arbiters, primary , me, maxBsonObjectSize,
+       
+    
+    listDatabases:
+      databases [ name, sizeOnDisk , empty ] , totalSize
+      
+    serverStatus:
+      host, version, process, uptime, uptimeEstimate, localTime, 
+       globalLock{ totalTime, lockTime, ratio, currentQueue:{ total, readers, writers} ,
+          activeClients:{ total, readers, writers} }, 
+       mem: { bits, resident, virtual, supported, mapped }
+       connections: { current , available }
+       extra_info: { note, heap_usage_bytes, page_faults }
+       indexCounters: { btree: { accesses , hits, misses, resets, missRatio } }
+       backgroundFlushing: { flushes, total_ms, average_ms, last_ms, last_finished }
+       cursors : { totalOpen, clientCursors_size , timedOut }
+       network: { bytesIn, bytesOut, numRequests }
+       repl: { setName, ismaster, secondary, hosts[], arbiters[], primary, me }
+       opcountersRepl : { insert, query, update, delete, getmore, command }
+       opcounters : { insert, query, update, delete, getmore, command }
+       asserts: { regular, warning, msg, user, rollovers }
+       writeBacksQueued 
+   	 
+  	 
+  	 
