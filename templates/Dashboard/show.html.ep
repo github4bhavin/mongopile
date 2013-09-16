@@ -9,16 +9,13 @@ google.load( 'visualization', '1.0', { 'packages':['corechart'] } );
 
 $(document).ready(function(){
 	
-   // load google visualization
-   google.setOnLoadCallback( drawAllCharts () );
+  // load google visualization
+  google.setOnLoadCallback( );
 	
-   getAllRS();
-	
-   $("#RSPannel").on('click',".rs-block",function(){
-		
-   });
+  getAllRS();
 
-  
+
+    	  
   $("#RSPannel").on('click',"#addNewRS",function(event){
 
   	   
@@ -44,7 +41,7 @@ $(document).ready(function(){
        		}
        });  		
   		
-  		$("#RSPannel").on('click',"#newRSButton",function(event){
+  	   $("#RSPannel").on('click',"#newRSButton",function(event){
 
 			//__post data
 			if( $("#newRSName").val() ) {
@@ -69,7 +66,7 @@ $(document).ready(function(){
   		});
   }); 
  
-});
+});//__jquery ends
 
 function getAllRS(){
 
@@ -132,8 +129,8 @@ function getAllRS(){
      	                    'height' : 70,
      	                    'colors' : ['#505030','#500000'],
      	                    'tooltip': { 'isHtml' : false , 'fontSize' : '12px' },
-     	                    'chartArea' : { left: 10, top : 0, height : 50 , width:50 },
-     	                    'fontSize' : '30px',
+     	                    'chartArea' : { left: 10, top : 10, height : 50 , width:50 },
+     	                    'fontSize' : '50px',
      	                    'legend' : {'position' : 'none'},
 							'tooltip.textStyle' : {'fontSize' : '30px'}
      	                 };
@@ -161,8 +158,6 @@ function log(message,clearflag,type){
     }	
 }
 
-function drawAllCharts (){
-}
 
 %= end
 

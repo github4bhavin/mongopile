@@ -41,7 +41,6 @@ sub startup {
   my $self = shift;
   my $ROUTES = $self->routes;
 
-	
 
   $self->app->secret ( 'M0ng0P1le' );
   $self->app->config ( hypnotoad => {

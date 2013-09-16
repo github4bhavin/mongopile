@@ -343,7 +343,7 @@ sub __create_blank_db {
 sub _clean_input {
 	my $self = shift;
 	my $input = shift || return ;
-	$input =~ s/(['"])/\\$1/g;
+	$input =~ s/(['"])/\\$1/g; #'
 	return $input;
 }
 
