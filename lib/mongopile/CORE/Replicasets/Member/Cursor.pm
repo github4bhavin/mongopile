@@ -5,6 +5,8 @@ sub new {
   my $self = {@_};
   bless $self, $class;
   
+  $self->{ 'totalOpen' };
+  $self->{ '}
   return $self;
 }
 
