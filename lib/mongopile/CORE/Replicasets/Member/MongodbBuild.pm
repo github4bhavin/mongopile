@@ -11,8 +11,8 @@ sub new {
   $self->{ 'bits'              } = undef unless $self->{'bits'             }; # 32 or 64 bit machine
   $self->{ 'debug'             } = undef unless $self->{'debug'            }; # debug on or off
   $self->{ 'maxBsonObjectSize' } = undef unless $self->{'maxBsonObjectSize'}; # max bson size allowed
-  $self->{ 'mongoProcessname'  } = undef unless $self->{'mongoProcessname' }; # mongo process name
-  $self->{ 'writeBacksQueued'  } = undef unless $self->{ 'writeBackQueued' }; # write back queue allowed? 
+  $self->{ 'mongoProcessname'  } = 'mongod' unless $self->{'mongoProcessname' }; # mongo process name
+  $self->{ 'writeBacksQueued'  } = 'false' unless $self->{ 'writeBackQueued' }; # write back queue allowed? 
   
   return $self;
 }
