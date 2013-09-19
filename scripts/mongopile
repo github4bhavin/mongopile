@@ -1,0 +1,23 @@
+#!/usr/bin/env perl
+
+use Mojo::Base -strict;
+use Mojolicious::Commands;
+
+BEGIN {
+   use File::Basename        qw { dirname          };
+   use File::Spec::Functions qw { splitdir rel2abs };
+   my  @_BASEDIR = (splitdir( dirname( rel2abs( __FILE__ ) ) ) );
+   pop @_BASEDIR;
+   push @INC , join '/' , @_BASEDIR , 'lib';
+
+};
+
+
+use mongopile 1.0;
+
+$ENV { MOJO_APP  } = 'mongopile';
+$ENV { MOJO_MODE } = 'development';
+
+#Mojolicious::Commands->start_app('mongopile');
+
+Mojolicious::Commands->start;

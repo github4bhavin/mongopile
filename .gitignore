@@ -15,6 +15,7 @@ local.properties
 .classpath
 .settings/
 .loadpath
+.gitignore
 
 # External tool builders
 .externalToolBuilders/
@@ -148,6 +149,7 @@ develop-eggs
 
 # Installer logs
 pip-log.txt
+*.log
 
 # Unit test / coverage reports
 .coverage
@@ -161,3 +163,12 @@ pip-log.txt
 
 # Mac crap
 .DS_Store
+
+# extra files
+*.*~
+*.lock
+*.pid
+data/*
+
+# vi backup edited files
+*~

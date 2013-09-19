@@ -1,0 +1,33 @@
+<!doctype html>
+<html>
+
+	<title><%= title %></title>
+   
+     <link href="/favicon.ico" rel="icon" type="image/x-icon" />
+     <link href='http://fonts.googleapis.com/css?family=Quicksand|Flamenco|Raleway|Special+Elite' rel='stylesheet' type='text/css'>
+
+%= javascript "/js/jquery-min.js"
+%= javascript "/js/underscore-min.js"
+%= javascript "/js/backbone-min.js"
+%= javascript "/js/d3-min.js"
+%= javascript "bootstrap/js/bootstrap.min.js"
+
+%= stylesheet "/css/main.css"
+%= stylesheet "/bootstrap/css/bootstrap.min.css"
+%= stylesheet "/bootstrap/css/docs.css"
+        
+</head>
+
+<body>
+
+<%= content %>
+
+<div id="log">
+% if ( my $error = stash 'error' ) {
+   <%= my $error %>
+% }
+</div>
+
+</body>
+
+</html>
