@@ -12,4 +12,10 @@ sub new {
   return $self;
 }
 
+sub regular  { $_[0]->{'regular'  } = $_[1] if defined ($_[1]); return $_[0]->{'regular'  };  }
+sub warnings { $_[0]->{'warnings' } = $_[1] if defined ($_[1]); return $_[0]->{'warnings' };  }
+sub msg      { $_[0]->{'msg'      } = $_[1] if defined ($_[1]); return $_[0]->{'msg'      };  }
+sub user     { $_[0]->{'user'     } = $_[1] if defined ($_[1]); return $_[0]->{'user'     };  }
+sub rollover { $_[0]->{'rollover' } = $_[1] if defined ($_[1]); return $_[0]->{'rollover' };  }
+
 1;

@@ -10,4 +10,8 @@ sub new {
   return $self;
 }
 
+sub total   { $_[0]->{'total'   } = $_[1] if defined ($_[1]); return $_[0]->{'total'   };  }
+sub readers { $_[0]->{'readers' } = $_[1] if defined ($_[1]); return $_[0]->{'readers' };  }
+sub writers { $_[0]->{'writers' } = $_[1] if defined ($_[1]); return $_[0]->{'writers' };  }
+
 1;

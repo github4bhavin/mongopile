@@ -10,4 +10,8 @@ sub new {
   return $self;
 }
 
+sub name       { $_[0]->{'name'       } = $_[1] if defined ($_[1]); return $_[0]->{'name'       };  }
+sub sizeOnDisk { $_[0]->{'sizeOnDisk' } = $_[1] if defined ($_[1]); return $_[0]->{'sizeOnDisk' };  }
+sub empty      { $_[0]->{'empty'      } = $_[1] if defined ($_[1]); return $_[0]->{'empty'      };  }
+
 1;

@@ -22,4 +22,12 @@ sub new {
   return $self;
 }
 
+sub totalTime { $_[0]->{'totalTime' } = $_[1] if defined ($_[1]); return $_[0]->{'totalTime'};  }
+sub lockTime  { $_[0]->{'lockTime'  } = $_[1] if defined ($_[1]); return $_[0]->{'lockTime' };  }
+sub ratio     { $_[0]->{'ratio'     } = $_[1] if defined ($_[1]); return $_[0]->{'ratio'    };  }
+sub currentQueue
+              { $_[0]->{'currentQueue' } = $_[1] if defined ($_[1]); return $_[0]->{'currentQueue' };  }
+sub activeQueue
+              { $_[0]->{'activeQueue' } = $_[1] if defined ($_[1]); return $_[0]->{'activeQueue'   };  }
+
 1;

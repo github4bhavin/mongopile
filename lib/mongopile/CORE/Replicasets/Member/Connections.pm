@@ -9,4 +9,7 @@ sub new {
   return $self;
 }
 
+sub current   { $_[0]->{'current'   } = $_[1] if defined ($_[1]); return $_[0]->{'current'   };  }
+sub available { $_[0]->{'available' } = $_[1] if defined ($_[1]); return $_[0]->{'available' };  }
+
 1;

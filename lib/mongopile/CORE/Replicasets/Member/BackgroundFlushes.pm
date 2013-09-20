@@ -12,4 +12,10 @@ sub new {
   return $self;
 }
 
+sub flushes       { $_[0]->{'flushed'       } = $_[1] if defined ($_[1]); return $_[0]->{'flushed'       };  }
+sub total_ms      { $_[0]->{'total_ms'      } = $_[1] if defined ($_[1]); return $_[0]->{'total_ms'      };  }
+sub average_ms    { $_[0]->{'average_ms'    } = $_[1] if defined ($_[1]); return $_[0]->{'average_ms'    };  }
+sub last_ms       { $_[0]->{'last_ms'       } = $_[1] if defined ($_[1]); return $_[0]->{'last_ms'       };  }
+sub last_finished { $_[0]->{'last_finished' } = $_[1] if defined ($_[1]); return $_[0]->{'last_finished' };  }
+
 1;

@@ -11,4 +11,9 @@ sub new {
   return $self;
 }
 
+sub accesses  { $_[0]->{'accesses' } = $_[1] if defined ($_[1]); return $_[0]->{'accesses' };  }
+sub hits      { $_[0]->{'hits'     } = $_[1] if defined ($_[1]); return $_[0]->{'hits'     };  }
+sub misses    { $_[0]->{'misses'   } = $_[1] if defined ($_[1]); return $_[0]->{'misses'   };  }
+sub missRatio { $_[0]->{'missRatio'} = $_[1] if defined ($_[1]); return $_[0]->{'missRatio'};  }
+
 1;
