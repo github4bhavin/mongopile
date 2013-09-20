@@ -10,4 +10,8 @@ sub new {
   return $self;
 }
 
+sub byteIn      { $_[0]->{'byteIn'      } = $_[1] if defined ($_[1]); return $_[0]->{'byteIn'      };  }
+sub byteOut     { $_[0]->{'byteOut'     } = $_[1] if defined ($_[1]); return $_[0]->{'byteOut'     };  }
+sub numRequests { $_[0]->{'numRequests' } = $_[1] if defined ($_[1]); return $_[0]->{'numRequests' };  }
+
 1;

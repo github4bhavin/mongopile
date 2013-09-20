@@ -13,4 +13,11 @@ sub new {
   return $self;
 }
 
+sub insert  { $_[0]->{'insert' } = $_[1] if defined ($_[1]); return $_[0]->{'insert' };  }
+sub query   { $_[0]->{'query'  } = $_[1] if defined ($_[1]); return $_[0]->{'query'  };  }
+sub update  { $_[0]->{'update' } = $_[1] if defined ($_[1]); return $_[0]->{'update' };  }
+sub delete  { $_[0]->{'delete' } = $_[1] if defined ($_[1]); return $_[0]->{'delete' };  }
+sub getmore { $_[0]->{'getmore'} = $_[1] if defined ($_[1]); return $_[0]->{'getmore'};  }
+sub command { $_[0]->{'command'} = $_[1] if defined ($_[1]); return $_[0]->{'command'};  }
+
 1;
