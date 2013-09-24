@@ -1,7 +1,7 @@
 Replicaset:
   replicasetName
   members:
-  	 memberid, name, health, state, stateStr, uptime, optime, optimedate, lastheartbeat , pingMs
+  	 memberid, name, health, state, stateStr, uptime, optime, optimedate, lastheartbeat , pingMs, priority
     
     systeminfo: 
      version, gitVersion, sysInfo, Version , bits, debug , maxBsonObjectSize

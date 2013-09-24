@@ -33,7 +33,7 @@ sub new {
   $self->{ 'js'              } = undef;
   $self->{ 'oidMachine'      } = undef;
   $self->{ 'localTime'       } = undef;
-
+  $self->{ 'priority'        } = undef;
 
   if ( !defined (
            $self->{ 'mongodbBuild'      })  &&
@@ -117,5 +117,6 @@ sub connections       { $_[0]->{'connections'      } = $_[1] if defined($_[1]); 
 sub indexCounters     { $_[0]->{'indexCounters'    } = $_[1] if defined($_[1]); $_[0]->{'indexCounters'    }; }
 sub replicasetState   { $_[0]->{'replicasetState'  } = $_[1] if defined($_[1]); $_[0]->{'replicasetState'  }; }
 sub backgroundFlushed { $_[0]->{'backgroundFlushed'} = $_[1] if defined($_[1]); $_[0]->{'backgroundFlushed'}; }
+sub priority          { $_[0]->{'priority'         } = $_[1] if defined($_[1]); $_[0]->{'priority'         }; }
 
 1;
