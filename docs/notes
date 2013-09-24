@@ -89,4 +89,15 @@ opcountersReplicasets:( same as opcounters )
    insert, query, update, delete, getmore, command    
         
     
+
+urls:
+1. http://10.202.21.77:28017/replSetGetStatus?text=1
+2. http://10.202.21.77:28017/local/system.replset/?html=1  	 
+3. http://10.202.21.77:28017/buildInfo?text=1
+4. http://10.202.21.77:28017/cursorInfo?text=1
+5. http://10.202.21.77:28017/features?text=1
+6. http://10.202.21.77:28017/isMaster?text=1
+7. http://10.202.21.77:28017/listDatabases?text=1
+8. http://10.202.21.77:28017/serverStatus?text=1
+9. http://10.202.21.77:28017/top?text=1
   	 

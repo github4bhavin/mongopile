@@ -12,74 +12,57 @@ sub new {
    my $self  = {@_};
    bless $self, $class;
    
-      $self->{ 'host'    } = undef  if !$self->{'host'   };
-      $self->{ 'port'    } = 28017  if !$self->{'port'   };
-      $self->{ 'http'    } = 'http' if !$self->{'http'   };
-      $self->{ 'rs_data' } = undef  if !$self->{'rs_data'};
       $self->{ 'error'   } = undef  if !$self->{'error'  };
-
+      $self->{ 'members' } = ()     if !$self->{'members'};
+      $self->{ 'rsname'  } = undef  if !$self->{'rsname' };
+      
    return $self;
 }
 
-sub get_status {
+sub get_replicaset_status_using_rest {
    my $self = shift;
+   my ($host,$port) = (@_);
+   my $replicaset_data = $self->_replSetGetStatus();
+      $self->rsname( $replicaset_data->{'set'} );
+
+        foreach my $member ( @{ $replicaset_data->{'members'} } ){
+            my $rs_member = new mongopile::CORE::Replicasets::Member();
+               $rs_member->memberid( $member->{'_id'});
+               $rs_member->name( $member->{'name'});
+               $rs_member->healthStatus( $member->{'health'});
+               $rs_member->replicasetState( $member->{'stateStr'});
+               $rs_member->optime( $member->{'optime'}->{'t'});
+               $rs_member->pingms( $member->{'pingMs'} );
+               $rs_member->lastHeartbeat( $member->{'lastHeartbeat'}->{'$date'});
+               $self->add_member( $rs_member );
+               undef $rs_member;
+        }
    
-   if( !$self->{'host'}  || !$self->{'port'} ) 
-     { $self->{'error'} = "no host or port defiend";
-       return undef; }
-              
-   my @_RS_URL = ( $self->{'http'} , '://' , $self->{'host'} , ':' , $self->{'port'} ,
-                  '/replSetGetStatus', '?json=1');
-   my $_UA = new Mojo::UserAgent();
+}
+
+sub rsname     { $_[0]->{'rsname' } = $_[1] if defined ($_[1]); $_[0]->{'rsname'}; }
+sub members    { $_[0]->{'rsname'}; }
+sub add_member {
+	return unless defined($_[1]);
+	return unless ref $_[1] ne 'mongopile::CORE::Replicasets::Member'; 
+	push @{ $_[0]->members } , $_[1];
+}
+
+sub _replSetGetStatus {
+  my $self = shift;
+  my ($host, $port, $https_flag ) = (@_);
+  my $protocol = ( defined($https_flag ) ? 'https' : 'http';
+  my $_UA = new Mojo::UserAgent();              
    
-   my $_json_data = $_UA->get( join '', @_RS_URL )->res->body;
-   my $_data;   
+  my $_json_data = $_UA->get( join '', 
+   	( $protocol , '://' , $host, $port, '/replSetGetStatus' , '?json=1')
+      )->res->body;
+  my $_data = undef;   
 
    eval { $_data = Mojo::JSON->decode ( $_json_data ); };
    
-   if ($@)
-      { $self->error($@);
-        return undef; }
-  else 
-      {
-        $self->{ 'rs_name' } = $rs_name = $_data->{'set'};
-        foreach my $member ( @{ $_data->{'members'} } ){  
-            $self->{ 'rs_data'}->{ $rs_name }->{ $member->{name} }->{ 'optime'       } = $member->{'optime'       }->{'i'    } || 0;
-            $self->{ 'rs_data'}->{ $rs_name }->{ $member->{name} }->{ 'optimeDate'   } = $member->{'optimeDate'   }->{'$date'} || 0;
-            $self->{ 'rs_data'}->{ $rs_name }->{ $member->{name} }->{ 'lastHeartbeat'} = $member->{'lastHeartbeat'}->{'$date'} || 0;
-            $self->{ 'rs_data'}->{ $rs_name }->{ $member->{name} }->{ 'health'       } = $member->{'health'       } || 0;
-            $self->{ 'rs_data'}->{ $rs_name }->{ $member->{name} }->{ 'state'        } = $member->{'state'        } || 0;
-            $self->{ 'rs_data'}->{ $rs_name }->{ $member->{name} }->{ 'uptime'       } = $member->{'uptime'       } || 0;
-            $self->{ 'rs_data'}->{ $rs_name }->{ $member->{name} }->{ 'health'       } = $member->{'health'       } || 0;
-            $self->{ 'rs_data'}->{ $rs_name }->{ $member->{name} }->{ 'pingMs'       } = $member->{'pingMs'       } || 0;            
-        }
-        
-       $self->host('');
-       $self->port('');
-       return $_data; 
-      }
+   return $_data;
    
-}
-
-sub host {
-   my $self = shift;
-   my $_new_val = shift;
-      $self->{ 'host' } = $_new_val if $_new_val;
-   return $self->{ 'host' };
-}
-
-sub port {
-   my $self = shift;
-   my $_new_val = shift;
-      $self->{ 'port' } = $_new_val if $_new_val;
-   return $self->{ 'port' };
-}
-
-sub http {
-   my $self = shift;
-   my $_new_val = shift;
-      $self->{ 'http' } = $_new_val if $_new_val;
-   return $self->{ 'http' };
 }
 
 sub error {
@@ -92,27 +75,4 @@ sub error {
           $self->{ 'error' } = '';
        return $retval ;
    }
-}
-
-sub rs_data {
-   my $self = shift;
-   return $self->{ 'rs_data' };
-}
-
-sub rs_name {
-   my $self = shift;
-   return $self->{ 'rs_name' };
-}
-
-sub get_members {
-   my $self = shift;
-   return undef if !$self->rs_name;
-   return ($self->{'rs_data'}->{ $self->rs_name }) ? keys ( %{$self->{ 'rs_data' }->{ $self->rs_name }} ) : undef;
-}
-
-sub get_stats_for_member {
-   #__cached stats 
-   my $self = shift;
-   my ($host, $port )  = @_;
-   return ( $host && $port ) ? $self->{'rs_data'}->{ $self->rs_name }->{ "$host:$port" } : undef;
 }
