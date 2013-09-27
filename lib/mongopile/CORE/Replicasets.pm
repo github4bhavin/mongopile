@@ -14,7 +14,7 @@ sub new {
    my $self  = {@_};
    bless $self, $class;
       $self->{ 'error'   } = undef  if !$self->{'error'  };
-      $self->{ 'members' } = [] if !$self->{'members'};
+      $self->{ 'members' } = {} if !$self->{'members'};
       $self->{ 'rsname'  } = undef  if !$self->{'rsname' };
    return $self;
 }
@@ -23,7 +23,7 @@ sub get_replicaset_status_using_rest {
    my $self = shift;
    my ($host,$port) = (@_);
    $host = 'localhost' unless defined($host);
-   $port = '28017'     unless defined($port);
+   $port = 27017       unless defined($port);
    
    my $replicaset_data = $self->_replSetGetStatus( $host, $port );
       $self->rsname( $replicaset_data->{'set'} );
@@ -40,6 +40,15 @@ sub get_replicaset_status_using_rest {
                $self->add_member( $rs_member );
                undef $rs_member;
         }
+
+   #__local.system.replset
+   my $local_system_replset_data = $self->_localSystemReplset( $host, $port );
+   print Dumper $local_system_replset_data;
+   foreach my $member ( ($local_system_replset_data->{'members'}) ){
+   		#$self->get_rs_member_obj( $member->{'host'} )->priority( $member->{'priority'} );
+   		print "\n priority----". $member->{'priority'};
+   }        
+        
    return 1;
 }
 
@@ -48,10 +57,12 @@ sub members    { $_[0]->{'members'}; }
 sub add_member {
 	return unless defined($_[1]);
 	return unless ref $_[1] eq 'mongopile::CORE::Replicasets::Member'; 
-	push ( $_[0]->members ), $_[1];
-	
-	print Dumper $_[1];
+	$_[0]->members->{$_[1]->name} = $_[1];
+
 }
+sub remove_member { delete $_[0]->members->{$_[1]} if defined($_[1]); }
+
+sub get_rs_member_obj { return $_[0]->members->{$_[1]} if defined($_[1]); }
 
 sub _top {
 	return $_[0]->_make_request( $_[1], $_[2] ,
@@ -97,7 +108,7 @@ sub _buildInfo {
 
 sub _localSystemReplset {
 	return $_[0]->_make_request( $_[1], $_[2] ,
-		join '', ( '/local/system.replset', '?' ,'json=1' )
+		join '', ( '/local/system.replset/', '?' ,'json=1' )
 	 );
 }
 
@@ -113,7 +124,9 @@ sub _make_request {
   my ($host, $port, $urlpath, $https_flag ) = (@_);
   my $protocol = ( defined($https_flag) ) ? 'https' : 'http';
   my $_UA = new Mojo::UserAgent();              
-   
+
+     $port += 1000; # rest port
+     
   my $_json_data = $_UA->get( join '', 
    	( $protocol , '://' , $host, ':' , $port, $urlpath)
       )->res->body;

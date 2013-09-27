@@ -41,7 +41,6 @@ SKIP: {
         } 
         
         ok( $obj->members, 'get members');
-		diag Dumper $obj->members;
 		
         ok( $obj->rsname, 'rs name');
         diag $obj->rsname;
