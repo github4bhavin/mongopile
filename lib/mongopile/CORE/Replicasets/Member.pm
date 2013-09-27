@@ -37,57 +37,57 @@ sub new {
 
   if ( !defined (
            $self->{ 'mongodbBuild'      })  &&
-       ref $self->{ 'mongodbBuild'      }    eq 'mongopile::CORE::Replicasets::Member::mongodbBuild'        )
+       ref $self->{ 'mongodbBuild'      }    ne 'mongopile::CORE::Replicasets::Member::mongodbBuild'        )
        {   $self->{ 'mongodbBuild'      } =  new mongopile::CORE::Replicasets::Member::MongodbBuild();      }
 
   if ( !defined (
            $self->{ 'cursor'            })  &&
-       ref $self->{ 'cursor'            }   eq 'mongopile::CORE::Replicasets::Member::Cursor'               )
+       ref $self->{ 'cursor'            }   ne 'mongopile::CORE::Replicasets::Member::Cursor'               )
        {   $self->{ 'cursor'            } = new mongopile::CORE::Replicasets::Member::Cursor();             }
 
   if ( !defined (
            $self->{ 'databases'         })  &&
-       ref $self->{ 'databases'         }   eq 'mongopile::CORE::Replicasets::Member::Databases'            )
+       ref $self->{ 'databases'         }   ne 'mongopile::CORE::Replicasets::Member::Databases'            )
       {    $self->{ 'databases'         } = new mongopile::CORE::Replicasets::Member::Databases();          }
 
   if ( !defined (
            $self->{ 'globalLock'        })  &&
-       ref $self->{ 'globalLock'        }   eq 'mongopile::CORE::Replicasets::Member::GlobalLock'           )
+       ref $self->{ 'globalLock'        }   ne 'mongopile::CORE::Replicasets::Member::GlobalLock'           )
       {    $self->{ 'globalLock'        } = new mongopile::CORE::Replicasets::Member::GlobalLock();         }
 
   if ( !defined (
            $self->{ 'memory'            })  &&
-       ref $self->{ 'memeory'           }   eq 'mongopile::CORE::Replicasets::Member::Memory'               )
+       ref $self->{ 'memeory'           }   ne 'mongopile::CORE::Replicasets::Member::Memory'               )
       {    $self->{ 'memeory'           } = new mongopile::CORE::Replicasets::Member::Memory();             }
 
   if ( !defined (
            $self->{ 'connections'       })  &&
-       ref $self->{ 'connections'       }   eq 'mongopile::CORE::Replicasets::Member::Connections'          )
+       ref $self->{ 'connections'       }   ne 'mongopile::CORE::Replicasets::Member::Connections'          )
       {    $self->{ 'connections'       } = new mongopile::CORE::Replicasets::Member::Connections();        }
 
   if ( !defined (
            $self->{ 'indexCounters'     })  &&
-       ref $self->{ 'indexCounters'     }   eq 'mongopile::CORE::Replicasets::Member::IndexCounters'        )
+       ref $self->{ 'indexCounters'     }   ne 'mongopile::CORE::Replicasets::Member::IndexCounters'        )
       {    $self->{ 'indexCounters'     } = new mongopile::CORE::Replicasets::Member::IndexCounters();      }
 
   if ( !defined (
            $self->{ 'backgroundFlushed' })  &&
-       ref $self->{ 'backgroundFlushed' }   eq 'mongopile::CORE::Replicasets::Member::BackgroundFlushes'   )
+       ref $self->{ 'backgroundFlushed' }   ne 'mongopile::CORE::Replicasets::Member::BackgroundFlushes'   )
       {    $self->{ 'backgroundFlushed' } = new mongopile::CORE::Replicasets::Member::BackgroundFlushes(); }
 
   if ( !defined (
            $self->{ 'network'           })  &&
-       ref $self->{ 'network'           }   eq 'mongopile::CORE::Replicasets::Member::BackgroundFlushes'   )
+       ref $self->{ 'network'           }   ne 'mongopile::CORE::Replicasets::Member::BackgroundFlushes'   )
       {    $self->{ 'network'           } = new mongopile::CORE::Replicasets::Member::BackgroundFlushes(); }
 
   if ( !defined (
            $self->{ 'opcounters'        })  &&
-       ref $self->{ 'opcounters'        }   eq 'mongopile::CORE::Replicasets::Member::Opcounters'          )
+       ref $self->{ 'opcounters'        }   ne 'mongopile::CORE::Replicasets::Member::Opcounters'          )
       {    $self->{ 'opcounters'        } = new mongopile::CORE::Replicasets::Member::Opcounters();        }
 
   if ( !defined (
            $self->{ 'asserts'           })  &&
-       ref $self->{ 'asserts'           }   eq 'mongopile::CORE::Replicasets::Member::Asserts'             )
+       ref $self->{ 'asserts'           }   ne 'mongopile::CORE::Replicasets::Member::Asserts'             )
       {    $self->{ 'asserts'           } = new mongopile::CORE::Replicasets::Member::Asserts();           }
 
  return $self;
@@ -118,5 +118,10 @@ sub indexCounters     { $_[0]->{'indexCounters'    } = $_[1] if defined($_[1]); 
 sub replicasetState   { $_[0]->{'replicasetState'  } = $_[1] if defined($_[1]); $_[0]->{'replicasetState'  }; }
 sub backgroundFlushed { $_[0]->{'backgroundFlushed'} = $_[1] if defined($_[1]); $_[0]->{'backgroundFlushed'}; }
 sub priority          { $_[0]->{'priority'         } = $_[1] if defined($_[1]); $_[0]->{'priority'         }; }
+
+sub mongodbBuild {
+  $_[0]->{'mongodbBuild'} = $_[1] unless ref $_[1] eq 'mongopile::CORE::Replicasets::Member::MongodbBuild'; 
+  return $_[0]->{'mongodbBuild'};
+}
 
 1;

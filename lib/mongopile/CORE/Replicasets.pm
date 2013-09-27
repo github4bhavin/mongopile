@@ -8,6 +8,7 @@ use Mojo::JSON;
 use Data::Dumper;
 
 use mongopile::CORE::Replicasets::Member;
+use mongopile::CORE::Replicasets::Member::MongodbBuild;
 
 sub new {
    my $class = shift;
@@ -22,7 +23,7 @@ sub new {
 sub get_replicaset_status_using_rest {
    my $self = shift;
    my ($host,$port) = (@_);
-   $host = 'localhost' unless defined($host);
+   $host = '127.0.0.1' unless defined($host);
    $port = 27017       unless defined($port);
    
    my $replicaset_data = $self->_replSetGetStatus( $host, $port );
@@ -38,18 +39,31 @@ sub get_replicaset_status_using_rest {
                $rs_member->pingms( $member->{'pingMs'} );
                $rs_member->lastHeartbeat( $member->{'lastHeartbeat'}->{'$date'});
                $self->add_member( $rs_member );
-               undef $rs_member;
+               $rs_member = undef;
         }
 
    #__local.system.replset
-   my $local_system_replset_data = $self->_localSystemReplset( $host, $port );
    
-   foreach my $member ( @{ @{ $local_system_replset_data->{'rows'} }[0]->{'members'} } ){
+   foreach my $member ( @{ @{ $self->_localSystemReplset( $host, $port)->{'rows'} }[0]->{'members'} } ){
+	
 		my $_member_obj = $self->get_member( $member->{'host'} );
-   		   $_member_obj->priority( $member->{'priority'} );
+
+        	#___mongodbBuild object
+		   	my $build_info = $self->_buildInfo( $self->_split_host_port( $member->{'host'} ) );        	
+    		my $mongo_build_obj = $_member_obj->mongodbBuild();
+    		   print Dumper $_member_obj;
+    		   print Dumper $mongo_build_obj;
+    	   	   $mongo_build_obj->version( $build_info->{'version'} );
+
+   		$_member_obj->priority( $member->{'priority'} );
+     	#$_member_obj->mongodbBuild( $mongo_build_obj );
+
+     	print Dumper $mongo_build_obj;
+
    		$self->add_member( $member->{'host'} , $_member_obj );   
-   }        
-        
+  
+  }# foreach
+  
    return 1;
 }
 
@@ -60,6 +74,9 @@ sub add_member {
 	$_[0]->{'members'}->{$_[1]->name} = $_[1];
 }
 
+sub _split_host_port { return split ':', $_[1] if defined $_[1]; }
+
+sub members { return keys( %{ $_[0]->{'members'} }); }
 sub get_member{ return $_[0]->{'members'}->{ $_[1] } if defined($_[1]); }
 sub remove_member { delete $_[0]->{'members'}->{$_[1]} if defined($_[1]); }
 sub rsname     { $_[0]->{'rsname' } = $_[1] if defined ($_[1]); $_[0]->{'rsname'}; }

@@ -41,7 +41,7 @@ SKIP: {
         } 
         ok( $obj->rsname, 'rs name');
         diag $obj->rsname;
-        diag Dumper $obj;
+        #diag Dumper $obj;
 };
 
  
