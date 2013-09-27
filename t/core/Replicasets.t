@@ -39,9 +39,6 @@ SKIP: {
            diag $obj->error;
            skip 'no local mongo instance running' , 1 ;
         } 
-        
-        ok( $obj->members, 'get members');
-		
         ok( $obj->rsname, 'rs name');
         diag $obj->rsname;
         diag Dumper $obj;

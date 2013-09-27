@@ -43,26 +43,26 @@ sub get_replicaset_status_using_rest {
 
    #__local.system.replset
    my $local_system_replset_data = $self->_localSystemReplset( $host, $port );
-   print Dumper $local_system_replset_data;
-   foreach my $member ( ($local_system_replset_data->{'members'}) ){
-   		#$self->get_rs_member_obj( $member->{'host'} )->priority( $member->{'priority'} );
-   		print "\n priority----". $member->{'priority'};
+   
+   foreach my $member ( @{ @{ $local_system_replset_data->{'rows'} }[0]->{'members'} } ){
+		my $_member_obj = $self->get_member( $member->{'host'} );
+   		   $_member_obj->priority( $member->{'priority'} );
+   		$self->add_member( $member->{'host'} , $_member_obj );   
    }        
         
    return 1;
 }
 
-sub rsname     { $_[0]->{'rsname' } = $_[1] if defined ($_[1]); $_[0]->{'rsname'}; }
-sub members    { $_[0]->{'members'}; }
+
 sub add_member {
 	return unless defined($_[1]);
 	return unless ref $_[1] eq 'mongopile::CORE::Replicasets::Member'; 
-	$_[0]->members->{$_[1]->name} = $_[1];
-
+	$_[0]->{'members'}->{$_[1]->name} = $_[1];
 }
-sub remove_member { delete $_[0]->members->{$_[1]} if defined($_[1]); }
 
-sub get_rs_member_obj { return $_[0]->members->{$_[1]} if defined($_[1]); }
+sub get_member{ return $_[0]->{'members'}->{ $_[1] } if defined($_[1]); }
+sub remove_member { delete $_[0]->{'members'}->{$_[1]} if defined($_[1]); }
+sub rsname     { $_[0]->{'rsname' } = $_[1] if defined ($_[1]); $_[0]->{'rsname'}; }
 
 sub _top {
 	return $_[0]->_make_request( $_[1], $_[2] ,
