@@ -1,5 +1,7 @@
 package mongopile::CORE::Replicasets::Member::Databases;
 
+use mongopile::CORE::Replicasets::Member::Database;
+
 sub new {
   my $class = shift;
   my $self = {@_};
