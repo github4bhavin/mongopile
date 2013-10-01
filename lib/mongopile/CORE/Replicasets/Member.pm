@@ -1,6 +1,17 @@
 package mongopile::CORE::Replicasets::Member;
 
 $VERSION = 1.0;
+my @PROJECT_DIR;
+BEGIN {
+use File::Basename        qw { dirname           };
+use File::Spec::Functions qw { splitdir  rel2abs };
+
+   @PROJECT_DIR = splitdir( dirname( rel2abs( __FILE__ ) ) );
+   pop @PROJECT_DIR;
+   pop @PROJECT_DIR;
+   pop @PROJECT_DIR;
+   push @INC, join '/' , @PROJECT_DIR;
+};
 
 use mongopile::CORE::Replicasets::Member::MongodbBuild;
 use mongopile::CORE::Replicasets::Member::Cursor;
@@ -19,20 +30,18 @@ sub new {
  my $self = {@_};
  bless $self, $class;
 
-  #Replicasets Members should have following properties
-
-  $self->{ 'memberid'        };
-  $self->{ 'name'            }; #hostname
-  $self->{ 'healthStatus'    };
-  $self->{ 'replicasetState' }; # same as stateStr and state
-  $self->{ 'uptime'          }; # server uptime
-  $self->{ 'optime'          }; # oplog uptime
-  $self->{ 'lastHeartbeat'   };
-  $self->{'pingms'           };
-  $self->{'isMaster'         };
-  $self->{'js'               };
-  $self->{'oidMachine'       };
-  $self->{'localTime'        };
+  $self->{ 'memberid'        } = undef unless $self->{'memberid'       };
+  $self->{ 'name'            } = undef unless $self->{'name'           }; #hostname
+  $self->{ 'healthStatus'    } = undef unless $self->{'healthStatus'   };
+  $self->{ 'replicasetState' } = undef unless $self->{'replicasetState'}; # same as stateStr and state
+  $self->{ 'uptime'          } = undef unless $self->{'uptime'         }; # server uptime
+  $self->{ 'optime'          } = undef unless $self->{'optime'         }; # oplog uptime
+  $self->{ 'lastHeartbeat'   } = undef unless $self->{'lastHeartbeat'  };
+  $self->{'pingms'           } = undef unless $self->{'pingms'         };
+  $self->{'isMaster'         } = undef unless $self->{'isMaster'       };
+  $self->{'js'               } = undef unless $self->{'js'             };
+  $self->{'oidMachine'       } = undef unless $self->{'oidMachine'     };
+  $self->{'localTime'        } = undef unless $self->{'localTime'      };
 
 
   if ( !defined (

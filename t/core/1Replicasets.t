@@ -1,19 +1,19 @@
 #!/usr/bin/perl
-
 use Test::More;
-
-use File::Basename        qw { dirname           };
-use File::Spec::Functions qw { splitdir  rel2abs };
 
 my @_PROJECT_DIR;
 
 BEGIN {
+
+use File::Basename        qw { dirname           };
+use File::Spec::Functions qw { splitdir  rel2abs };
+
    @_PROJECT_DIR = splitdir( dirname( rel2abs( __FILE__ ) ) );
    pop @_PROJECT_DIR;
    pop @_PROJECT_DIR;
    push @INC , join '/', @_PROJECT_DIR , 'lib';
    push @INC , join '/', @_PROJECT_DIR , 'mongopile';
-   push @INC , join '/', @_PROJECT_DIR , 'CORE';      
+   push @INC , join '/', @_PROJECT_DIR , 'CORE';
 };
 
 use_ok('mongopile::CORE::Replicasets');
@@ -34,7 +34,7 @@ my @methods = ( 'new',
                'rs_name',
                'get_members',
                'get_stats_for_member',
-             );   
+             );
 
 map { can_ok( $obj , $_); } @methods;
 
@@ -44,8 +44,8 @@ SKIP: {
         if ( !($rs_status = $obj->get_status() ) ) {
            diag $obj->error;
            skip 'no local mongo instance running' , 1 ;
-        } 
-        
+        }
+
         ok( $obj->get_members(), 'get members');
         ok( $obj->host(), 'host');
         ok( $obj->port(), 'port');
@@ -55,6 +55,6 @@ SKIP: {
         ok( $obj->rs_name(), 'rs_name');
 };
 
- 
+
 
 done_testing();
