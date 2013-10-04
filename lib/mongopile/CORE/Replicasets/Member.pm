@@ -30,21 +30,6 @@ sub new {
  my $self = {@_};
  bless $self, $class;
 
-<<<<<<< HEAD
-  $self->{ 'memberid'        } = undef unless $self->{'memberid'       };
-  $self->{ 'name'            } = undef unless $self->{'name'           }; #hostname
-  $self->{ 'healthStatus'    } = undef unless $self->{'healthStatus'   };
-  $self->{ 'replicasetState' } = undef unless $self->{'replicasetState'}; # same as stateStr and state
-  $self->{ 'uptime'          } = undef unless $self->{'uptime'         }; # server uptime
-  $self->{ 'optime'          } = undef unless $self->{'optime'         }; # oplog uptime
-  $self->{ 'lastHeartbeat'   } = undef unless $self->{'lastHeartbeat'  };
-  $self->{'pingms'           } = undef unless $self->{'pingms'         };
-  $self->{'isMaster'         } = undef unless $self->{'isMaster'       };
-  $self->{'js'               } = undef unless $self->{'js'             };
-  $self->{'oidMachine'       } = undef unless $self->{'oidMachine'     };
-  $self->{'localTime'        } = undef unless $self->{'localTime'      };
-
-=======
   #Replicasets Members should have following properties
 
   $self->{ 'memberid'        } = undef;
@@ -60,13 +45,8 @@ sub new {
   $self->{ 'oidMachine'      } = undef;
   $self->{ 'localTime'       } = undef;
   $self->{ 'priority'        } = undef;
-<<<<<<< HEAD
   $self->{ 'arbiter'         } = undef;
   
-=======
->>>>>>> cf33a3273ba243b535bb013ba32a31dda7f6e2b1
-
->>>>>>> dd16653b2d748efe02061008d034b716dc31c7dc
   if ( !defined (
            $self->{ 'mongodbBuild'      })  &&
        ref $self->{ 'mongodbBuild'      }    ne 'mongopile::CORE::Replicasets::Member::mongodbBuild'        )
