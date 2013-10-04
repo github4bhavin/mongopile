@@ -10,24 +10,34 @@ sub new {
   $self->{'totalTime'    } = undef unless defined $slef->{'totalTime'    };
   $self->{'lockTime'     } = undef unless defined $self->{'lockTime'     };
   $self->{'ratio'        } = undef unless defined $self->{'ratio'        };
-
-  if(ref $self->{'currentQueue'} ne 'mongopile::CORE::Replicasets::Member::CurrentQueue')
-  {
-  	$self->{'currentQueue' } = new mongopile::CORE::Replicasets::Member::CurrentQueue();
-  }
-  if(ref $self->{'activeClients'} ne 'mongopile::CORE::Replicasets::Member::ActiveClients')
-  {
-  	$self->{'activeClients'} = new mongopile::CORE::Replicasets::Member::ActiveClients();
-   }
+  $self->{'currentQueue' } = new mongopile::CORE::Replicasets::Member::CurrentQueue();
+  $self->{'activeClients'} = new mongopile::CORE::Replicasets::Member::ActiveClients();
+    
   return $self;
 }
 
 sub totalTime { $_[0]->{'totalTime' } = $_[1] if defined ($_[1]); return $_[0]->{'totalTime'};  }
 sub lockTime  { $_[0]->{'lockTime'  } = $_[1] if defined ($_[1]); return $_[0]->{'lockTime' };  }
 sub ratio     { $_[0]->{'ratio'     } = $_[1] if defined ($_[1]); return $_[0]->{'ratio'    };  }
-sub currentQueue
-              { $_[0]->{'currentQueue' } = $_[1] if defined ($_[1]); return $_[0]->{'currentQueue' };  }
-sub activeQueue
-              { $_[0]->{'activeQueue' } = $_[1] if defined ($_[1]); return $_[0]->{'activeQueue'   };  }
+              
+sub currentQueue {
+  my $self = shift;
+  my $_current_queue_obj = shift;
+  if( defined ($_current_queue_obj) &&
+      ref $_current_queue_obj eq 'mongopile::CORE::Replicasets::Member::CurrentQueue' ){
+  		$self->{'currentQueue'} = $_current_queue_obj;
+  } 
+  return $self->{'currentQueue'};
+}
+
+sub activeClients {
+  my $self = shift;
+  my $_active_clients_obj = shift;
+  if( defined ($_active_clients_obj) &&
+      ref $_active_clients_obj eq 'mongopile::CORE::Replicasets::Member::ActiveClients' ){
+  		$self->{'activeClients'} = $_active_clients_obj;
+  } 
+  return $self->{'activeClients'};
+}
 
 1;

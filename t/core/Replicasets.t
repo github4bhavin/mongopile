@@ -48,7 +48,8 @@ SKIP: {
             print "\n member : $member ";
 			#print Dumper ( $obj->get_member( $member )->mongodbBuild );
 			#print Dumper ( $obj->get_member( $member )->cursor );			      
-			print Dumper ( $obj->get_member( $member )->databases );
+			#print Dumper ( $obj->get_member( $member )->databases );
+			print Dumper ( $obj->get_member( $member )->globalLock );
         }
         
         

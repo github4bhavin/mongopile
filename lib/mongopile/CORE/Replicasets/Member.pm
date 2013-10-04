@@ -107,7 +107,7 @@ sub new {
 }
 
 sub js                { $_[0]->{'js'               } = $_[1] if defined($_[1]); $_[0]->{'js'               }; }
-sub memory            { $_[0]->{'memory'           } = $_[1] if defined($_[1]); $_[0]->{'memory'           }; }
+
 sub memberid          { $_[0]->{'memberid'         } = $_[1] if defined($_[1]); $_[0]->{'memberid'         }; }
 sub name              { $_[0]->{'name'             } = $_[1] if defined($_[1]); $_[0]->{'name'             }; }
 sub network           { $_[0]->{'network'          } = $_[1] if defined($_[1]); $_[0]->{'network'          }; }
@@ -123,7 +123,6 @@ sub oidMachine        { $_[0]->{'oidMachine'       } = $_[1] if defined($_[1]); 
 sub localTime         { $_[0]->{'localTime'        } = $_[1] if defined($_[1]); $_[0]->{'localTime'        }; }
 
 
-sub globallock        { $_[0]->{'globallock'       } = $_[1] if defined($_[1]); $_[0]->{'globallock'       }; }
 sub connections       { $_[0]->{'connections'      } = $_[1] if defined($_[1]); $_[0]->{'connections'      }; }
 sub indexCounters     { $_[0]->{'indexCounters'    } = $_[1] if defined($_[1]); $_[0]->{'indexCounters'    }; }
 sub replicasetState   { $_[0]->{'replicasetState'  } = $_[1] if defined($_[1]); $_[0]->{'replicasetState'  }; }
@@ -161,4 +160,23 @@ sub databases {
   return $self->{'databases'};
 }
 
+sub globalLock {
+  my $self = shift;
+  my $_globalLock_obj = shift;
+  if( defined ($_globalLock_obj) &&
+      ref $_globalLock_obj eq 'mongopile::CORE::Replicasets::Member::GlobalLock' ){
+  		$self->{'globalLock'} = $_globalLock_obj;
+  } 
+  return $self->{'globalLock'};
+}
+
+sub memory {
+  my $self = shift;
+  my $_memory_obj = shift;
+  if( defined ($_memory_obj) &&
+      ref $_memory_obj eq 'mongopile::CORE::Replicasets::Member::Memory' ){
+  		$self->{'memory'} = $_memory_obj;
+  } 
+  return $self->{'memory'};
+}
 1;

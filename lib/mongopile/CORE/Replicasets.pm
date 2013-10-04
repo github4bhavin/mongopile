@@ -55,8 +55,32 @@ sub __add_server_status {
   my ($host,$port) = (@_);
   my $_member_obj   = $self->get_member ( "$host:$port" );
   my $server_status_info = $self->_serverStatus( $host, $port );
-  my $server_status_obj  = $_member_obj->serverStatus( $host, $port );
-  
+     $_member_obj->uptime( $server_status_info->{'uptime'});
+     $_member_obj->localTime( $server_status_info->{'localTime'}->{'$date'});
+     
+     #__globalLock
+  my $globalLock_obj = $_member_obj->globalLock();
+     $globalLock_obj->totalTime( $server_status_info->{'globalLock'}->{'totalTime'} );   
+     $globalLock_obj->lockTime( $server_status_info->{'globalLock'}->{'lockTime'} );     
+     $globalLock_obj->ratio( $server_status_info->{'globalLock'}->{'ratio'} );
+  my $globalLock_currentQueue_obj = $globalLock_obj->currentQueue();
+     $globalLock_currentQueue_obj->total($server_status_info->{'globalLock'}->{'currentQueue'}->{'total'}); 
+     $globalLock_currentQueue_obj->readers($server_status_info->{'globalLock'}->{'currentQueue'}->{'readers'});
+     $globalLock_currentQueue_obj->writers($server_status_info->{'globalLock'}->{'currentQueue'}->{'writers'});          
+  my $globalLock_activeClients_obj = $globalLock_obj->activeClients();
+     $globalLock_activeClients_obj->total($server_status_info->{'globalLock'}->{'activeClients'}->{'total'}); 
+     $globalLock_activeClients_obj->readers($server_status_info->{'globalLock'}->{'activeClients'}->{'readers'});
+     $globalLock_activeClients_obj->writers($server_status_info->{'globalLock'}->{'activeClients'}->{'writers'});  
+     #__ memory
+  my $memory_obj = $_member_obj->memory();
+     $memory_obj->bits( $server_status_info->{'bits'});
+     $memory_obj->resident( $server_status_info->{'resident'});
+     $memory_obj->virtual( $server_status_info->{'virtual'});
+     $memory_obj->supported( $server_status_info->{'supported'});
+     $memory_obj->mapped( $server_status_info->{'mapped'});  
+                       
+     #___connections
+     
   $self->add_member( "$host:$port" , $_member_obj );
 }
 
