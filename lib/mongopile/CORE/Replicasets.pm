@@ -25,48 +25,92 @@ sub get_replicaset_status_using_rest {
    my ($host,$port) = (@_);
    $host = '127.0.0.1' unless defined($host);
    $port = 27017       unless defined($port);
+
+   $self->__add_local_system_repl_set( $host, $port );
    
-   my $replicaset_data = $self->_replSetGetStatus( $host, $port );
-      $self->rsname( $replicaset_data->{'set'} );
+   foreach my $member ( $self->get_members ){
+        $self->__add_build_info( $self->_split_host_port( $member ) );
+		$self->__add_is_master( $self->_split_host_port( $member ) );		  
 
-        foreach my $member ( @{ $replicaset_data->{'members'} } ){
-            my $rs_member = new mongopile::CORE::Replicasets::Member();
-               $rs_member->memberid( $member->{'_id'});
-               $rs_member->name( $member->{'name'});
-               $rs_member->healthStatus( $member->{'health'});
-               $rs_member->replicasetState( $member->{'stateStr'});
-               $rs_member->optime( $member->{'optime'}->{'t'});
-               $rs_member->pingms( $member->{'pingMs'} );
-               $rs_member->lastHeartbeat( $member->{'lastHeartbeat'}->{'$date'});
-               $self->add_member( $rs_member );
-               $rs_member = undef;
-        }
-
-   #__local.system.replset
-   
-   foreach my $member ( @{ @{ $self->_localSystemReplset( $host, $port)->{'rows'} }[0]->{'members'} } ){
-	
-		my $_member_obj = $self->get_member( $member->{'host'} );
-
-        	#___mongodbBuild object
-		   	my $build_info = $self->_buildInfo( $self->_split_host_port( $member->{'host'} ) );        	
-    		my $mongo_build_obj = $_member_obj->mongodbBuild();
-    		   print Dumper $_member_obj;
-    		   print Dumper $mongo_build_obj;
-    	   	   $mongo_build_obj->version( $build_info->{'version'} );
-
-   		$_member_obj->priority( $member->{'priority'} );
-     	#$_member_obj->mongodbBuild( $mongo_build_obj );
-
-     	print Dumper $mongo_build_obj;
-
-   		$self->add_member( $member->{'host'} , $_member_obj );   
-  
   }# foreach
+
+   print Dumper $self;
   
    return 1;
 }
 
+sub __add_local_system_repl_set {
+  my $self = shift;
+  my ($host, $port) = (@_);
+  my $_member_obj = $self->get_member( "$host:$port" );
+  my $replicaset_data = $self->_replSetGetStatus( $host, $port );
+     $self->rsname( $replicaset_data->{'set'} );
+
+     foreach my $member ( @{ $replicaset_data->{'members'} } ){
+         my $rs_member = new mongopile::CORE::Replicasets::Member();
+            $rs_member->memberid( $member->{'_id'});
+            $rs_member->name( $member->{'name'});
+            $rs_member->healthStatus( $member->{'health'});
+            $rs_member->replicasetState( $member->{'stateStr'});
+            $rs_member->optime( $member->{'optime'}->{'t'});
+            $rs_member->pingms( $member->{'pingMs'} );
+            $rs_member->lastHeartbeat( $member->{'lastHeartbeat'}->{'$date'});
+            $self->add_member( $rs_member );
+            $rs_member = undef;
+     }
+
+   #__local.system.replset
+   foreach my $member ( @{ @{ $self->_localSystemReplset( $host, $port)->{'rows'} }[0]->{'members'} } ){
+       my $_member_obj = $self->get_member( $member->{'host'} );
+	      $_member_obj->priority( $member->{'priority'} );
+   	      $self->add_member( $member->{'host'} , $_member_obj );
+  }# foreach
+
+}
+
+sub __add_is_master {
+  my $self = shift;
+  my ($host, $port) = (@_);
+  my $_member_obj = $self->get_member( "$host:$port" );
+
+  #__ismaster
+  my $is_master = $self->_isMaster( $host, $port);
+     $_member_obj->isMaster( $is_master->{'ismaster'} );
+     
+  if (defined (@{ $is_master->{'arbiters'} }[0]) &&
+      $is_master->{'me'} eq @{ $is_master->{'arbiters'} }[0] ){
+      $_member_obj->arbiter( @{ $is_master->{'arbiters'} }[0] );
+  }
+
+  $self->add_member( $host , $_member_obj );
+ 
+}
+
+sub __add_build_info {
+  my $self = shift;
+  my ($host, $port) = (@_);
+  my $_member_obj = $self->get_member( "$host:$port" );
+
+  #___mongodbBuild object
+  my $build_info = $self->_buildInfo( $host, $port );
+          	
+  my $mongo_build_obj = $_member_obj->mongodbBuild;
+     $mongo_build_obj->version( $build_info->{'version'} );
+     $mongo_build_obj->gitVersion( $build_info->{'gitVersion'} );
+     $mongo_build_obj->sysInfo( $build_info->{'sysInfo'} );
+     $mongo_build_obj->bits( $build_info->{'bits'} );
+     $mongo_build_obj->debug( $build_info->{'debug'} );
+     $mongo_build_obj->maxBsonObjectSize( $build_info->{'maxBsonObjectSize'} );    		      		      		      		      		
+
+     $build_info = undef;
+     $mongo_build_obj = undef;
+  $self->add_member( $host , $_member_obj );
+}
+
+sub get_members {
+  my $self = shift;
+  return keys( %{ $self->{'members'} }); 
+}
 
 sub add_member {
 	return unless defined($_[1]);

@@ -34,7 +34,8 @@ sub new {
   $self->{ 'oidMachine'      } = undef;
   $self->{ 'localTime'       } = undef;
   $self->{ 'priority'        } = undef;
-
+  $self->{ 'arbiter'         } = undef;
+  
   if ( !defined (
            $self->{ 'mongodbBuild'      })  &&
        ref $self->{ 'mongodbBuild'      }    ne 'mongopile::CORE::Replicasets::Member::mongodbBuild'        )
@@ -118,10 +119,16 @@ sub indexCounters     { $_[0]->{'indexCounters'    } = $_[1] if defined($_[1]); 
 sub replicasetState   { $_[0]->{'replicasetState'  } = $_[1] if defined($_[1]); $_[0]->{'replicasetState'  }; }
 sub backgroundFlushed { $_[0]->{'backgroundFlushed'} = $_[1] if defined($_[1]); $_[0]->{'backgroundFlushed'}; }
 sub priority          { $_[0]->{'priority'         } = $_[1] if defined($_[1]); $_[0]->{'priority'         }; }
+sub arbiter           { $_[0]->{'arbiter'          } = $_[1] if defined($_[1]); $_[0]->{'arbiter'          }; }
 
 sub mongodbBuild {
-  $_[0]->{'mongodbBuild'} = $_[1] unless ref $_[1] eq 'mongopile::CORE::Replicasets::Member::MongodbBuild'; 
-  return $_[0]->{'mongodbBuild'};
+  my $self = shift;
+  my $_mongodb_build_obj = shift;
+  if( defined ($_mongodb_build_obj) &&
+      ref $_mongodb_build_obj eq 'mongopile::CORE::Replicasets::Member::MongodbBuild' ){
+  		$self->{'mongodbBuild'} = $_mongodb_build_obj;
+  } 
+  return $self->{'mongodbBuild'};
 }
 
 1;
