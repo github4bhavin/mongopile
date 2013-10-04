@@ -15,10 +15,9 @@ use File::Spec::Functions qw { splitdir  rel2abs };
 use Mojo::UserAgent;
 use Mojo::JSON;
 use mongopile::CORE::Replicasets::Member;
-use Data::Dumper;
 
 use mongopile::CORE::Replicasets::Member;
-use mongopile::CORE::Replicasets::Member::MongodbBuild;
+use mongopile::CORE::Replicasets::Member::Database;
 
 sub new {
    my $class = shift;
@@ -31,8 +30,6 @@ sub new {
    return $self;
 }
 
-
-
 sub get_replicaset_status_using_rest {
    my $self = shift;
    my ($host,$port) = (@_);
@@ -42,20 +39,76 @@ sub get_replicaset_status_using_rest {
    $self->__add_local_system_repl_set( $host, $port );
    
    foreach my $member ( $self->get_members ){
-        $self->__add_build_info( $self->_split_host_port( $member ) );
-		$self->__add_is_master( $self->_split_host_port( $member ) );		  
-
+      $self->__add_build_info    ( $self->_split_host_port( $member ) );
+  	  $self->__add_is_master     ( $self->_split_host_port( $member ) );
+  	  $self->__add_cursor_info   ( $self->_split_host_port( $member ) );
+  	  $self->__add_features      ( $self->_split_host_port( $member ) );
+      $self->__add_list_databases( $self->_split_host_port( $member ) );
+      $self->__add_server_status ( $self->_split_host_port( $member ) );
   }# foreach
-
-   print Dumper $self;
   
    return 1;
+}
+
+sub __add_server_status {
+  my $self  = shift;
+  my ($host,$port) = (@_);
+  my $_member_obj   = $self->get_member ( "$host:$port" );
+  my $server_status_info = $self->_serverStatus( $host, $port );
+  my $server_status_obj  = $_member_obj->serverStatus( $host, $port );
+  
+  $self->add_member( "$host:$port" , $_member_obj );
+}
+
+
+sub __add_list_databases {
+  my $self  = shift;
+  my ($host,$port) = (@_);
+  my $_member_obj   = $self->get_member ( "$host:$port" );
+  my $databases_info = $self->_listDatabases( $host, $port );
+  my $databases_obj  = $_member_obj->databases;
+  
+  foreach my $dbs ( @{ $databases_info->{'databases'} } ){
+     $databases_obj->add_databases(
+       new mongopile::CORE::Replicasets::Member::Database(
+            'name'       => $dbs->{'name'      },
+            'sizeOnDisk' => $dbs->{'sizeOnDisk'},
+            'empty'      => $dbs->{'empty'     }
+       )
+     );            
+  }   
+  $self->add_member( "$host:$port" , $_member_obj );
+}
+
+
+sub __add_features {
+  my $self  = shift;
+  my ($host,$port) = (@_);
+  my $_member_obj   = $self->get_member ( "$host:$port" );
+  my $features_info = $self->_features( $host, $port );
+     $_member_obj->js( $features_info->{'js'} );
+     $_member_obj->oidMachine( $features_info->{'oidMachine'} );        
+  $self->add_member( "$host:$port" , $_member_obj );
+}
+
+
+sub __add_cursor_info{
+  my $self  = shift;
+  my ($host,$port) = (@_);
+  my $_member_obj = $self->get_member ( "$host:$port" );
+  
+  my $cursor_info = $self->_cursorInfo( $host, $port );
+  my $cursor_obj = $_member_obj->cursor;
+     $cursor_obj->totalOpen( $cursor_info->{'totalOpen'} );
+     $cursor_obj->clientCursorSize ( $cursor_info->{'clientCursors_size'} );
+     $cursor_obj->timedOut( $cursor_info->{'timedOut'} );
+     
+     $self->add_member( "$host:$port" , $_member_obj );
 }
 
 sub __add_local_system_repl_set {
   my $self = shift;
   my ($host, $port) = (@_);
-  my $_member_obj = $self->get_member( "$host:$port" );
   my $replicaset_data = $self->_replSetGetStatus( $host, $port );
      $self->rsname( $replicaset_data->{'set'} );
 
@@ -96,7 +149,6 @@ sub __add_is_master {
   }
 
   $self->add_member( $host , $_member_obj );
- 
 }
 
 sub __add_build_info {
@@ -219,30 +271,17 @@ sub error {
    }
 }
 
-sub host    { $_[0]->{'host'   } = $_[1] if defined $_[1]; return $_[0]->{'host'   }; }
 sub rs          { return $_[0]->{'rs'};                        }
 sub add_rs      { $_[0]->rs->{ $_[1] } = {} if defined $_[1];  }
 sub members     { return $_[0]->{'members'};                   }
-sub add_rs_host { $_[0]->rs->{ $_[1] }->{ 'host' } = $_[2] if defined ($_[1]) && defined ($_[2]); }
-sub add_rs_port { $_[0]->rs->{ $_[1] }->{ 'port' } = $_[2] if defined ($_[1]) && defined ($_[2]); }
-sub add_rs_member { push @{ $_[0]->rs->{ $_[1] }->{ 'members' } } , $_[2] if defined ($_[1]) && defined($_[2]); }
-sub _split_host_port { return split ':', $_[1] if defined $_[1]; }
-sub members { return keys( %{ $_[0]->{'members'} }); }
-sub get_member{ return $_[0]->{'members'}->{ $_[1] } if defined($_[1]); }
-sub remove_member { delete $_[0]->{'members'}->{$_[1]} if defined($_[1]); }
+sub add_rs_member 
+                { push @{ $_[0]->rs->{ $_[1] }->{ 'members' } } , $_[2] if defined ($_[1]) && defined($_[2]); }
+sub _split_host_port 
+                { return split ':', $_[1] if defined $_[1]; }
+sub members     { return keys( %{ $_[0]->{'members'} }); }
+sub get_member  { return $_[0]->{'members'}->{ $_[1] } if defined($_[1]); }
+sub remove_member
+               { delete $_[0]->{'members'}->{$_[1]} if defined($_[1]); }
 sub rsname     { $_[0]->{'rsname' } = $_[1] if defined ($_[1]); $_[0]->{'rsname'}; }
-
-sub get_members {
-   my $self = shift;
-   return undef if !$self->rsname;
-   return ($self->{'rs_data'}->{ $self->rsname }) ? keys ( %{$self->{ 'rs_data' }->{ $self->rsname }} ) : undef;
-}
-
-sub get_stats_for_member {
-   #__cached stats
-   my $self = shift;
-   my ($host, $port )  = @_;
-   return ( $host && $port ) ? $self->{'rs_data'}->{ $self->rsname }->{ "$host:$port" } : undef;
-}
 
 1;

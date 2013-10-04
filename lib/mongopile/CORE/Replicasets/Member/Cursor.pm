@@ -13,5 +13,5 @@ sub new {
 
 sub totalOpen        { $_[0]->{'totalOpen'        } = $_[1] if defined ($_[1]); return $_[0]->{'totalOpen'        };  }
 sub clientCursorSize { $_[0]->{'clientCursorSize' } = $_[1] if defined ($_[1]); return $_[0]->{'clientCursorSize' };  }
-sub timeOut          { $_[0]->{'timeOut'          } = $_[1] if defined ($_[1]); return $_[0]->{'timeOut'          };  }
+sub timedOut         { $_[0]->{'timedOut'         } = $_[1] if defined ($_[1]); return $_[0]->{'timedOut'         };  }
 1;

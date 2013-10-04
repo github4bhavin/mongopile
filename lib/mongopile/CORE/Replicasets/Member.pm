@@ -121,9 +121,8 @@ sub isMaster          { $_[0]->{'isMaster'         } = $_[1] if defined($_[1]); 
 sub healthStatus      { $_[0]->{'healthStatus'     } = $_[1] if defined($_[1]); $_[0]->{'healthStatus'     }; }
 sub oidMachine        { $_[0]->{'oidMachine'       } = $_[1] if defined($_[1]); $_[0]->{'oidMachine'       }; }
 sub localTime         { $_[0]->{'localTime'        } = $_[1] if defined($_[1]); $_[0]->{'localTime'        }; }
-sub mongodbBuild      { $_[0]->{'mongodbBuild'     } = $_[1] if defined($_[1]); $_[0]->{'mongodbBuild'     }; }
-sub cursor            { $_[0]->{'cursor'           } = $_[1] if defined($_[1]); $_[0]->{'cursor'           }; }
-sub databases         { $_[0]->{'databases'        } = $_[1] if defined($_[1]); $_[0]->{'databases'        }; }
+
+
 sub globallock        { $_[0]->{'globallock'       } = $_[1] if defined($_[1]); $_[0]->{'globallock'       }; }
 sub connections       { $_[0]->{'connections'      } = $_[1] if defined($_[1]); $_[0]->{'connections'      }; }
 sub indexCounters     { $_[0]->{'indexCounters'    } = $_[1] if defined($_[1]); $_[0]->{'indexCounters'    }; }
@@ -140,6 +139,26 @@ sub mongodbBuild {
   		$self->{'mongodbBuild'} = $_mongodb_build_obj;
   } 
   return $self->{'mongodbBuild'};
+}
+
+sub cursor {
+  my $self = shift;
+  my $_cursor_obj = shift;
+  if( defined ($_cursor_obj) &&
+      ref $_cursor_obj eq 'mongopile::CORE::Replicasets::Member::Cursor' ){
+  		$self->{'cursor'} = $_cursor_obj;
+  } 
+  return $self->{'cursor'};
+}
+
+sub databases {
+  my $self = shift;
+  my $_databases_obj = shift;
+  if( defined ($_databases_obj) &&
+      ref $_databases_obj eq 'mongopile::CORE::Replicasets::Member::Databases' ){
+  		$self->{'databases'} = $_databases_obj;
+  } 
+  return $self->{'databases'};
 }
 
 1;

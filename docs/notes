@@ -101,3 +101,55 @@ urls:
 8. http://10.202.21.77:28017/serverStatus?text=1
 9. http://10.202.21.77:28017/top?text=1
   	 
+    serverStatus:
+    -------------
+    
+       uptime -> member, 
+       uptimeEstimate, 
+       localTime -> member,
+        
+       globalLock { totalTime, 
+                    lockTime, 
+                    ratio, 
+                    currentQueue:{ 
+                             total, 
+                             readers, 
+                             writers
+                    },
+                    activeClients:{ 
+                             total,
+                             readers,
+                             writers
+                    }
+       }, -> globalLock 
+       mem: { 
+             bits,
+             resident,
+             virtual,
+             supported,
+             mapped
+      },
+      connections: { current , available },
+      
+       extra_info: { note(discard), heap_usage_bytes, page_faults } -> memory,
+       
+       indexCounters: { 
+                    btree: { accesses , hits, misses, resets, missRatio } 
+       },
+
+       backgroundFlushing: { flushes, total_ms, average_ms, last_ms, last_finished },
+       
+       cursors : { totalOpen, clientCursors_size , timedOut },
+       
+       network: { bytesIn, bytesOut, numRequests },
+
+       repl: { setName, ismaster, secondary, hosts[], arbiters[], primary, me }, (discard)
+       
+       opcountersRepl : { insert, query, update, delete, getmore, command },
+       
+       opcounters : { insert, query, update, delete, getmore, command },
+       
+       asserts: { regular, warning, msg, user, rollovers },
+       
+       writeBacksQueued  -> mongodbBuild 	 
+  	 

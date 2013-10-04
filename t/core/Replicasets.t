@@ -40,8 +40,18 @@ SKIP: {
            skip 'no local mongo instance running' , 1 ;
         } 
         ok( $obj->rsname, 'rs name');
-        diag $obj->rsname;
-        diag Dumper $obj;
+        ok( $obj->get_members , 'get members' );
+        
+        my @rs_members = $obj->get_members;
+        print Dumper @rs_members;
+        foreach my $member ( @rs_members ){
+            print "\n member : $member ";
+			#print Dumper ( $obj->get_member( $member )->mongodbBuild );
+			#print Dumper ( $obj->get_member( $member )->cursor );			      
+			print Dumper ( $obj->get_member( $member )->databases );
+        }
+        
+        
 };
 
 
