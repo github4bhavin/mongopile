@@ -1,0 +1,13 @@
+
+/ 
+/dashboard
+/replicasets
+ + getall
+ +add
+ +getReplicasetStat?rs=itarchdb
+ 
+ CORE = fetch data for each replicasets
+ 
+ DB  = store replicaset data
+ 
+ GUI = web interface
