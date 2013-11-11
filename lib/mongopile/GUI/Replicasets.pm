@@ -18,7 +18,6 @@ sub access {
 	 return 1;
 }
 
-
 sub get_all {
   my $self = shift;
      $self->redirect_to('/') unless $self->session('active');

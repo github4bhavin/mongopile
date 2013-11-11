@@ -17,23 +17,22 @@ use File::Spec::Functions qw { splitdir  rel2abs };
    push @INC , join '/', @_PROJECT_DIR , 'CORE';
 };
 
-use_ok('mongopile::CORE::Replicasets');
+my $required_version = 1.0;
 
-my $obj = new_ok('mongopile::CORE::Replicasets');
-
-#___ METHODS EXIST TEST
-
-my @methods = ('new',
-               'error',
-               'rsname',
-               'members',
-               'get_replicaset_status_using_rest',
-             );   
-
-map { can_ok( $obj , $_); } @methods;
-
-#___ FUNCTIONAL TEST
 SKIP: {
+
+ skip "Required Version ($required_version) not present" , 1 
+ unless use_ok('mongopile::CORE::Replicasets' , 
+               $required_version );
+
+	my $obj = new_ok('mongopile::CORE::Replicasets');
+	#___ METHODS EXIST TEST
+
+	
+	map { can_ok( $obj , $_); }
+	(
+	);
+	               
         my $rs_status;
         if ( !($rs_status = $obj->get_replicaset_status_using_rest() ) ) {
            diag $obj->error;
@@ -42,17 +41,8 @@ SKIP: {
         ok( $obj->rsname, 'rs name');
         ok( $obj->get_members , 'get members' );
         
-        my @rs_members = $obj->get_members;
-        print Dumper @rs_members;
-        foreach my $member ( @rs_members ){
-            print "\n member : $member ";
-			#print Dumper ( $obj->get_member( $member )->mongodbBuild );
-			#print Dumper ( $obj->get_member( $member )->cursor );			      
-			#print Dumper ( $obj->get_member( $member )->databases );
-			print Dumper ( $obj->get_member( $member )->globalLock );
-        }
-        
-        
+  
+         
 };
 
 

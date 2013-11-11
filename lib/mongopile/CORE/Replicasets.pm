@@ -1,5 +1,6 @@
 package mongopile::CORE::Replicasets;
-$VERSION = 1.0;
+
+$mongopile::CORE::Replicasets::VERSION = 1.0;
 
 my @PROJECT_DIR;
 BEGIN {
@@ -14,7 +15,6 @@ use File::Spec::Functions qw { splitdir  rel2abs };
 
 use Mojo::UserAgent;
 use Mojo::JSON;
-use mongopile::CORE::Replicasets::Member;
 
 use mongopile::CORE::Replicasets::Member;
 use mongopile::CORE::Replicasets::Member::Database;
@@ -40,9 +40,9 @@ sub get_replicaset_status_using_rest {
    
    foreach my $member ( $self->get_members ){
       $self->__add_build_info    ( $self->_split_host_port( $member ) );
-  	  $self->__add_is_master     ( $self->_split_host_port( $member ) );
-  	  $self->__add_cursor_info   ( $self->_split_host_port( $member ) );
-  	  $self->__add_features      ( $self->_split_host_port( $member ) );
+  	   $self->__add_is_master     ( $self->_split_host_port( $member ) );
+  	   $self->__add_cursor_info   ( $self->_split_host_port( $member ) );
+  	   $self->__add_features      ( $self->_split_host_port( $member ) );
       $self->__add_list_databases( $self->_split_host_port( $member ) );
       $self->__add_server_status ( $self->_split_host_port( $member ) );
   }# foreach
@@ -53,7 +53,7 @@ sub get_replicaset_status_using_rest {
 sub __add_server_status {
   my $self  = shift;
   my ($host,$port) = (@_);
-  my $_member_obj   = $self->get_member ( "$host:$port" );
+  my $_member_obj  = $self->get_member ( "$host:$port" );
   my $server_status_info = $self->_serverStatus( $host, $port );
      $_member_obj->uptime( $server_status_info->{'uptime'});
      $_member_obj->localTime( $server_status_info->{'localTime'}->{'$date'});
@@ -72,18 +72,25 @@ sub __add_server_status {
      $globalLock_activeClients_obj->readers($server_status_info->{'globalLock'}->{'activeClients'}->{'readers'});
      $globalLock_activeClients_obj->writers($server_status_info->{'globalLock'}->{'activeClients'}->{'writers'});  
      #__ memory
+
   my $memory_obj = $_member_obj->memory();
      $memory_obj->bits( $server_status_info->{'bits'});
      $memory_obj->resident( $server_status_info->{'resident'});
      $memory_obj->virtual( $server_status_info->{'virtual'});
      $memory_obj->supported( $server_status_info->{'supported'});
      $memory_obj->mapped( $server_status_info->{'mapped'});  
-                       
-     #___connections
+     $memory_obj->heap_usage_bytes( $server_status_info->{'heap_usage_bytes'});
+     $memory_obj->page_faults( $server_status_info->{'page_faults'});
      
+     #___connections
+  my $connections_obj = $_member_obj->connections();
+     $connections_obj->current( $server_status_info->{'connections'}->{'current'} );
+     $connections_obj->available( $server_status_info->{'connections'}->{'available'} );
+
+	use Data::Dumper; print Dumper $connections_obj;       
+       
   $self->add_member( "$host:$port" , $_member_obj );
 }
-
 
 sub __add_list_databases {
   my $self  = shift;
@@ -104,7 +111,6 @@ sub __add_list_databases {
   $self->add_member( "$host:$port" , $_member_obj );
 }
 
-
 sub __add_features {
   my $self  = shift;
   my ($host,$port) = (@_);
@@ -114,7 +120,6 @@ sub __add_features {
      $_member_obj->oidMachine( $features_info->{'oidMachine'} );        
   $self->add_member( "$host:$port" , $_member_obj );
 }
-
 
 sub __add_cursor_info{
   my $self  = shift;

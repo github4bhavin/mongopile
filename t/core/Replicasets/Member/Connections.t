@@ -17,9 +17,19 @@ BEGIN {
    push @INC , join '/', @_PROJECT_DIR , 'lib';
       
 };
+my $required_version = 1.0;
 
-use_ok('mongopile::CORE::Replicasets::Member::Connections');
+SKIP: {
 
-my $obj = new mongopile::CORE::Replicasets::Member::Connections();
+ skip "Required Version ($required_version) not present" , 1 
+ unless use_ok('mongopile::CORE::Replicasets::Member::Connections' , 
+               $required_version );
+
+ my $obj = new mongopile::CORE::Replicasets::Member::Connections();
+
+ map{ can_ok( $obj, $_ ); }
+ ( 'current' , 'available' );
+
+};
 
 done_testing;

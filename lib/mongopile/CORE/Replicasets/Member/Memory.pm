@@ -1,5 +1,7 @@
 package mongopile::CORE::Replicasets::Member::Memory;
 
+$mongopile::CORE::Replicasets::Member::Memory::VERSION = '1.0';
+
 sub new {
   my $class = shift;
   my $self = {@_};

@@ -1,6 +1,7 @@
 package mongopile::CORE::Replicasets::Member;
 
-$VERSION = 1.0;
+$mongopile::CORE::Replicasets::Member::VERSION = 1.0;
+
 my @PROJECT_DIR;
 BEGIN {
 use File::Basename        qw { dirname           };
@@ -69,8 +70,8 @@ sub new {
 
   if ( !defined (
            $self->{ 'memory'            })  &&
-       ref $self->{ 'memeory'           }   ne 'mongopile::CORE::Replicasets::Member::Memory'               )
-      {    $self->{ 'memeory'           } = new mongopile::CORE::Replicasets::Member::Memory();             }
+       ref $self->{ 'memory'           }   ne 'mongopile::CORE::Replicasets::Member::Memory'               )
+      {    $self->{ 'memory'           } = new mongopile::CORE::Replicasets::Member::Memory();             }
 
   if ( !defined (
            $self->{ 'connections'       })  &&
@@ -179,4 +180,15 @@ sub memory {
   } 
   return $self->{'memory'};
 }
+
+sub connections {
+  my $self = shift;
+  my $_connections_obj = shift;
+  if( defined ($_connections_obj) &&
+      ref $_connections_obj eq 'mongopile::CORE::Replicasets::Member::Connections' ){
+  		$self->{'connections'} = $_connections_obj;
+  } 
+  return $self->{'connections'};
+}
+
 1;

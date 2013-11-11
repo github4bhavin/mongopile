@@ -18,8 +18,25 @@ BEGIN {
       
 };
 
-use_ok('mongopile::CORE::Replicasets::Member::Memory');
+my $required_version = 1.0;
+
+SKIP: {
+
+ skip "Required Version ($required_version) not present" , 1 
+ unless use_ok('mongopile::CORE::Replicasets::Member::Memory' , 
+               $required_version );
 
 my $obj = new mongopile::CORE::Replicasets::Member::Memory();
 
+map { can_ok( $obj, $_); } (
+	'new',
+	'bits',
+	'virtual',
+	'supported',
+	'mapped',
+	'heap_usage_bytes',
+	'page_faults',
+);
+
+};
 done_testing;

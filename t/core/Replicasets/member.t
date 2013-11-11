@@ -19,10 +19,44 @@ BEGIN {
    push @INC , join '/', @_PROJECT_DIR , 'Replicasets';
 };
 
-use_ok('mongopile::CORE::Replicasets::Member');
+my $required_version = 1.0;
 
-my $obj = new mongopile::CORE::Replicasets::Member();
+SKIP: {
 
-diag Dumper $obj;
+ skip "Required Version ($required_version) not present" , 1 
+ unless use_ok('mongopile::CORE::Replicasets::Member' , 
+               $required_version );
+
+ my $obj = new mongopile::CORE::Replicasets::Member();
+
+ map{ can_ok( $obj, $_ ); } 
+ (
+ 	'new',
+ 	'js',
+ 	'memberid',
+ 	'network',
+ 	'opcounters',
+ 	'asserts',
+ 	'uptime',
+ 	'optime',
+ 	'lastHeartbeat',
+ 	'pingms',
+ 	'isMaster',
+ 	'healthStatus',
+ 	'oidMachine',
+ 	'connections',
+ 	'indexCounters',
+ 	'replicasetState',
+ 	'backgroundFlushed',
+ 	'priority',
+ 	'arbiter',
+ 	'mongodbBuild',
+ 	'cursor',
+ 	'databases',
+ 	'globalLock',
+ 	'memory',
+ );
+
+};
 
 done_testing;

@@ -1,5 +1,7 @@
 package mongopile::CORE::Replicasets::Member::Connections;
 
+$mongopile::CORE::Replicasets::Member::Connections::VERSION = 1.0;
+
 sub new {
   my $class = shift;
   my $self = {@_};
